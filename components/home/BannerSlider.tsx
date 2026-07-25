@@ -61,7 +61,7 @@ export function BannerSlider() {
   useEffect(() => {
     const timer = setInterval(() => {
       setIndex((i) => (i + 1) % banners.length);
-    }, 4500);
+    }, 2000);
     return () => clearInterval(timer);
   }, []);
 
@@ -88,7 +88,7 @@ export function BannerSlider() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.6 }}
           className="absolute inset-0 h-full w-full object-cover object-top"
         />
       </AnimatePresence>
