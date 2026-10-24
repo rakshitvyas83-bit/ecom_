@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { createProduct, updateProduct } from "@/lib/products";
-import { uploadImages } from "@/lib/upload";
+import { deleteImages, uploadImages } from "@/lib/upload";
 import type { Product, ProductCategory, ProductSize } from "@/types/product";
 
 interface AdminProductFormProps {
@@ -30,6 +30,13 @@ const emptySizeStock = (): SizeStock => ({
   XXL: ""
 });
 
+type ExistingImage = { id: string; url: string };
+
+const extractFileId = (value: string) => {
+  const match = value.match(/\/files\/([^/?#]+)/);
+  return match ? match[1] : value;
+};
+
 export default function AdminProductForm({ editProduct, onDone }: AdminProductFormProps) {
   const [form, setForm] = useState({
     name: "",
@@ -44,6 +51,8 @@ export default function AdminProductForm({ editProduct, onDone }: AdminProductFo
   const [selectedSizes, setSelectedSizes] = useState<ProductSize[]>([]);
   const [sizeStock, setSizeStock] = useState<SizeStock>(emptySizeStock);
   const [files, setFiles] = useState<File[]>([]);
+  const [existingImages, setExistingImages] = useState<ExistingImage[]>([]);
+  const [removedIds, setRemovedIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -62,10 +71,18 @@ export default function AdminProductForm({ editProduct, onDone }: AdminProductFo
       category: editProduct.category,
       isactive: editProduct.isactive !== false,
       isfeatured: editProduct.featured,
-      isshowcased: editProduct.isshowcased ?? false,  // add this line
+      isshowcased: editProduct.isshowcased ?? false
     });
     setSelectedSizes(editProduct.sizes);
     setSizeStock(nextStock);
+    setExistingImages(
+  editProduct.images.map((url, i) => ({
+    id: editProduct.imageIds?.[i] ?? extractFileId(url),
+    url
+  }))
+);
+    setRemovedIds([]);
+    setFiles([]);
   }, [editProduct]);
 
   const totalStock = useMemo(
@@ -76,6 +93,17 @@ export default function AdminProductForm({ editProduct, onDone }: AdminProductFo
       ),
     [selectedSizes, sizeStock]
   );
+
+  const newPreviews = useMemo(
+    () => files.map((f) => URL.createObjectURL(f)),
+    [files]
+  );
+
+  useEffect(() => {
+    return () => {
+      newPreviews.forEach((u) => URL.revokeObjectURL(u));
+    };
+  }, [newPreviews]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -100,11 +128,25 @@ export default function AdminProductForm({ editProduct, onDone }: AdminProductFo
     setSelectedSizes((current) => (current.includes(size) ? current : [...current, size]));
   };
 
+  const removeExistingImage = (id: string) => {
+    setExistingImages((cur) => cur.filter((img) => img.id !== id));
+    setRemovedIds((cur) => [...cur, id]);
+  };
+
+  const removeNewFile = (index: number) => {
+    setFiles((cur) => cur.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (selectedSizes.length === 0) {
       alert("Select at least one size");
+      return;
+    }
+
+    if (existingImages.length + files.length === 0) {
+      alert("Add at least one image");
       return;
     }
 
@@ -116,15 +158,14 @@ export default function AdminProductForm({ editProduct, onDone }: AdminProductFo
         stock: Number(sizeStock[size] || 0)
       }));
 
-      // Extract raw file IDs from existing image URLs
-const existingIds = (editProduct?.images ?? []).map((url) => {
-  const match = url.match(/files\/([^/]+)\//);
-  return match ? match[1] : url;
-});
+      const newIds = files.length > 0 ? await uploadImages(files) : [];
+      const images = [...existingImages.map((img) => extractFileId(img.id)), ...newIds];
+console.log("images being saved:", images);
 
-// Upload new files if any, then merge with existing
-const newIds = files.length > 0 ? await uploadImages(files) : [];
-const images = [...existingIds, ...newIds];
+const bad = images.find((id) => id.length > 50);
+if (bad) {
+  throw new Error(`Not a valid file ID: ${bad.slice(0, 80)}`);
+}
 
       const payload = {
         name: form.name,
@@ -140,11 +181,14 @@ const images = [...existingIds, ...newIds];
         featured: form.isfeatured,
         popular: editProduct?.popular ?? false,
         isactive: form.isactive,
-        isshowcased: form.isshowcased,
+        isshowcased: form.isshowcased
       };
 
       if (editProduct) {
         await updateProduct(editProduct.id, payload);
+        if (removedIds.length > 0) {
+          await deleteImages(removedIds);
+        }
         alert("Product updated");
       } else {
         await createProduct(payload);
@@ -165,6 +209,8 @@ const images = [...existingIds, ...newIds];
       setSelectedSizes([]);
       setSizeStock(emptySizeStock());
       setFiles([]);
+      setExistingImages([]);
+      setRemovedIds([]);
     } catch (err: any) {
       console.error(err);
       alert(err?.message ? `Error saving product: ${err.message}` : "Error saving product");
@@ -222,16 +268,17 @@ const images = [...existingIds, ...newIds];
         />
         <span className="font-medium">Featured product</span>
       </label>
+
       <label className="flex items-center gap-3 border p-3 rounded">
-  <input
-    name="isshowcased"
-    type="checkbox"
-    checked={form.isshowcased}
-    onChange={handleChange}
-    className="h-4 w-4"
-  />
-  <span className="font-medium">Show in hero strip</span>
-</label>
+        <input
+          name="isshowcased"
+          type="checkbox"
+          checked={form.isshowcased}
+          onChange={handleChange}
+          className="h-4 w-4"
+        />
+        <span className="font-medium">Show in hero strip</span>
+      </label>
 
       <div className="space-y-3">
         <p className="font-medium">Sizes and stock</p>
@@ -266,7 +313,55 @@ const images = [...existingIds, ...newIds];
         <p className="text-sm text-gray-600">Total stock: {totalStock}</p>
       </div>
 
-      <input type="file" multiple onChange={(e) => setFiles(Array.from(e.target.files ?? []))} />
+      {existingImages.length > 0 && (
+        <div className="space-y-2">
+          <p className="font-medium">Current images</p>
+          <div className="flex flex-wrap gap-3">
+            {existingImages.map((img) => (
+              <div key={img.id} className="relative h-24 w-24">
+                <img src={img.url} alt="" className="h-full w-full rounded border object-cover" />
+                <button
+                  type="button"
+                  onClick={() => removeExistingImage(img.id)}
+                  className="absolute -right-2 -top-2 h-6 w-6 rounded-full bg-red-600 text-xs text-white"
+                  aria-label="Remove image"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <input
+        type="file"
+        multiple
+        accept="image/*"
+        onChange={(e) => {
+          const picked = Array.from(e.target.files ?? []);
+          e.target.value = "";
+          setFiles((cur) => [...cur, ...picked]);
+        }}
+      />
+
+      {files.length > 0 && (
+        <div className="flex flex-wrap gap-3">
+          {files.map((file, i) => (
+            <div key={`${file.name}-${i}`} className="relative h-24 w-24">
+              <img src={newPreviews[i]} alt="" className="h-full w-full rounded border object-cover" />
+              <button
+                type="button"
+                onClick={() => removeNewFile(i)}
+                className="absolute -right-2 -top-2 h-6 w-6 rounded-full bg-red-600 text-xs text-white"
+                aria-label="Remove new image"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
 
       <button disabled={loading} className="bg-black text-white px-4 py-2 rounded disabled:opacity-60">
         {loading ? "Saving..." : editProduct ? "Update Product" : "Add Product"}

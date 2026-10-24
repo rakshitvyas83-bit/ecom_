@@ -23,6 +23,7 @@ export interface Product {
   sizeInventory: SizeInventory[];
   category: ProductCategory;
   images: string[];
+  imageIds?: string[];  
   featured: boolean;
   popular: boolean;
   isactive?: boolean;
