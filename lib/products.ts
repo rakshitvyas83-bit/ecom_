@@ -113,7 +113,8 @@ function toBoolean(value: unknown, fallback = false): boolean {
 export function normalizeProduct(document: ProductDocument): Product {
   const sizes = toStringArray(document.sizes) as ProductSize[];
   const stock = Number(document.stock ?? 0);
-  const images = toStringArray(document.images).map(toImageUrl);
+  const rawImages = toStringArray(document.images);
+const images = rawImages.map(toImageUrl);
   const discountPrice =
     (document.discountPrice ?? document.discounted_price) === undefined ||
     (document.discountPrice ?? document.discounted_price) === null
@@ -134,6 +135,7 @@ export function normalizeProduct(document: ProductDocument): Product {
     sizeInventory: toSizeInventory(document.sizeInventory ?? document.sizeinventory, sizes, stock),
     category: document.category ?? fallbackCategory,
     images,
+    imageIds: rawImages,
     featured: toBoolean(document.isfeatured ?? document.featured, false),
     popular: toBoolean(document.popular, false),
     isactive,
