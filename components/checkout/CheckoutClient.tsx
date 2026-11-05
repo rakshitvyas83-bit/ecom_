@@ -12,6 +12,7 @@ import {
   useCartStore
 } from "@/store/cart-store";
 import { formatCurrency } from "@/utils/format";
+import { account } from "@/lib/appwrite";
 
 const inputClass =
   "min-h-12 rounded-full border border-forest/10 bg-pearl/92 px-5 outline-none transition focus:border-gold";
@@ -97,6 +98,7 @@ if (!/^\d{10}$/.test(customerPhone)) {
 
 setLoading(true);
 
+      const { jwt } = await account.createJWT();
       const response = await fetch("/api/create-order", {
         method: "POST",
 
@@ -145,6 +147,7 @@ setLoading(true);
 
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${jwt}`,
         },
 
         body: JSON.stringify({

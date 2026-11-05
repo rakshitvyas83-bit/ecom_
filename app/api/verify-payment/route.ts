@@ -4,11 +4,23 @@ import { NextResponse } from "next/server";
 
 import { ID } from "node-appwrite";
 
-import { getDatabases } from "@/lib/appwrite-server";
+import { getAuthenticatedUserId, getDatabases } from "@/lib/appwrite-server";
 import { generateMockShipment } from "@/lib/mockShipping";
 
 export async function POST(req: Request) {
   try {
+    const authorization = req.headers.get("authorization");
+    const jwt = authorization?.startsWith("Bearer ") ? authorization.slice(7) : "";
+    if (!jwt) {
+      return NextResponse.json({ success: false, error: "Authentication required." }, { status: 401 });
+    }
+
+    let userId: string;
+    try {
+      userId = await getAuthenticatedUserId(jwt);
+    } catch {
+      return NextResponse.json({ success: false, error: "Invalid or expired session." }, { status: 401 });
+    }
     const body = await req.json();
 
     const {
@@ -60,6 +72,7 @@ export async function POST(req: Request) {
       process.env.APPWRITE_ORDERS_COLLECTION_ID!,
       newOrderId,
       {
+        userId,
         customerName,
         customerEmail,
         customerPhone,

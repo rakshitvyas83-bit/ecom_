@@ -1,43 +1,45 @@
-import { AppwriteException, Permission, Role } from "appwrite";
-import { databases } from "@/lib/appwrite";
+import { AppwriteException } from "appwrite";
+import { account, databases } from "@/lib/appwrite";
 import { CARTS_ID, DATABASE_ID } from "@/lib/constants";
 import type { CartItem } from "@/store/cart-store";
 
-const ownerOnly = (userId: string) => [
-  Permission.read(Role.user(userId)),
-  Permission.update(Role.user(userId)),
-  Permission.delete(Role.user(userId))
-];
+async function getAccountPrefs(userId: string) {
+  const user = await account.get();
+  if (user.$id !== userId) {
+    throw new Error("The signed-in account changed while syncing the cart.");
+  }
+  return account.getPrefs<Record<string, unknown>>();
+}
 
-const isCode = (error: unknown, code: number) =>
-  error instanceof AppwriteException && error.code === code;
-
-/** Returns null when the user has no cart document yet. */
-export async function fetchServerCart(userId: string): Promise<CartItem[] | null> {
+async function fetchLegacyCart(userId: string): Promise<CartItem[] | null> {
   try {
     const doc = await databases.getDocument(DATABASE_ID, CARTS_ID, userId);
-    const parsed = JSON.parse(doc.items || "[]");
-    return Array.isArray(parsed) ? (parsed as CartItem[]) : [];
+    const items: unknown = JSON.parse(doc.items || "[]");
+    if (!Array.isArray(items)) {
+      throw new Error("The saved cart has an invalid format.");
+    }
+    return items as CartItem[];
   } catch (error) {
-    if (isCode(error, 404)) return null;
+    if (error instanceof AppwriteException && error.code === 404) return null;
     throw error;
   }
 }
 
-export async function saveServerCart(userId: string, items: CartItem[]) {
-  const data = { items: JSON.stringify(items) };
-
-  try {
-    await databases.updateDocument(DATABASE_ID, CARTS_ID, userId, data);
-  } catch (error) {
-    if (!isCode(error, 404)) throw error;
-
-    try {
-      await databases.createDocument(DATABASE_ID, CARTS_ID, userId, data, ownerOnly(userId));
-    } catch (createError) {
-      // another tab created it first
-      if (!isCode(createError, 409)) throw createError;
-      await databases.updateDocument(DATABASE_ID, CARTS_ID, userId, data);
-    }
+/** Returns null when the user has no saved cart yet. */
+export async function fetchServerCart(userId: string): Promise<CartItem[] | null> {
+  const prefs = await getAccountPrefs(userId);
+  if (Array.isArray(prefs.cartItems)) {
+    return prefs.cartItems as CartItem[];
   }
+
+  const legacyItems = await fetchLegacyCart(userId);
+  if (legacyItems) {
+    await account.updatePrefs({ ...prefs, cartItems: legacyItems });
+  }
+  return legacyItems;
+}
+
+export async function saveServerCart(userId: string, items: CartItem[]) {
+  const prefs = await getAccountPrefs(userId);
+  await account.updatePrefs({ ...prefs, cartItems: items });
 }
