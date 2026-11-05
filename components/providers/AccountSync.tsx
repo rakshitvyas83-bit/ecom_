@@ -9,7 +9,7 @@ import { createCartItem, mergeCartItems, useCartStore, type CartItem } from "@/s
 import { useWishlistStore } from "@/store/wishlist-store";
 
 const OWNER_KEY = "KOTA_KARIGARI_SYNC_OWNER";
-const DEBOUNCE_MS = 600;
+const DEBOUNCE_MS = 250;
 
 async function refreshCartItems(items: CartItem[]): Promise<CartItem[]> {
   if (items.length === 0) return items;
@@ -20,13 +20,28 @@ async function refreshCartItems(items: CartItem[]): Promise<CartItem[]> {
 
     return items.flatMap((item) => {
       const product = byId.get(item.productId);
-      if (!product) return [];
+      if (!product) return [item];
       const fresh = createCartItem(product, item.size, item.quantity);
-      return fresh ? [fresh] : [];
+      return [fresh ?? item];
     });
   } catch {
     return items; // offline or API error: keep what we have
   }
+}
+
+function mergeSavedCartItems(serverItems: CartItem[], localItems: CartItem[]) {
+  const merged = new Map(serverItems.map((item) => [`${item.productId}-${item.size}`, item]));
+  for (const item of localItems) {
+    const key = `${item.productId}-${item.size}`;
+    const serverItem = merged.get(key);
+    merged.set(
+      key,
+      serverItem
+        ? { ...serverItem, quantity: Math.max(serverItem.quantity, item.quantity) }
+        : item
+    );
+  }
+  return Array.from(merged.values());
 }
 
 export function AccountSync() {
@@ -64,7 +79,10 @@ export function AccountSync() {
         if (owner === null) {
           cartItems = mergeCartItems(serverItems ?? [], localItems); // guest -> account
         } else {
-          cartItems = serverItems ?? (owner === userId ? localItems : []);
+          cartItems =
+            owner === userId
+              ? mergeSavedCartItems(serverItems ?? [], localItems)
+              : serverItems ?? [];
         }
         cartItems = await refreshCartItems(cartItems);
 
@@ -117,8 +135,13 @@ export function AccountSync() {
         });
 
         // first time on this device for this user: write the merged result back
+        if (
+          owner !== userId ||
+          JSON.stringify(cartItems) !== JSON.stringify(serverItems ?? [])
+        ) {
+          await saveServerCart(userId, cartItems);
+        }
         if (owner !== userId) {
-          saveServerCart(userId, cartItems).catch(console.error);
           saveServerWishlist(userId, wishlistProducts.map((product) => product.id)).catch(console.error);
         }
       } catch (error) {

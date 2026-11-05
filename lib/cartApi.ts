@@ -25,6 +25,8 @@ async function fetchLegacyCart(userId: string): Promise<CartItem[] | null> {
   }
 }
 
+const saveQueues = new Map<string, Promise<void>>();
+
 /** Returns null when the user has no saved cart yet. */
 export async function fetchServerCart(userId: string): Promise<CartItem[] | null> {
   const prefs = await getAccountPrefs(userId);
@@ -40,6 +42,30 @@ export async function fetchServerCart(userId: string): Promise<CartItem[] | null
 }
 
 export async function saveServerCart(userId: string, items: CartItem[]) {
-  const prefs = await getAccountPrefs(userId);
-  await account.updatePrefs({ ...prefs, cartItems: items });
+  const previous = saveQueues.get(userId) ?? Promise.resolve();
+  const current = previous.catch(() => {}).then(async () => {
+    let lastError: unknown;
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      try {
+        const prefs = await getAccountPrefs(userId);
+        const updated = await account.updatePrefs({ ...prefs, cartItems: items });
+        if (!Array.isArray(updated.prefs.cartItems)) {
+          throw new Error("Appwrite did not confirm the cart update.");
+        }
+        return;
+      } catch (error) {
+        lastError = error;
+        if (attempt < 2) {
+          await new Promise((resolve) => setTimeout(resolve, 300 * (attempt + 1)));
+        }
+      }
+    }
+    throw lastError;
+  });
+  saveQueues.set(userId, current);
+  try {
+    await current;
+  } finally {
+    if (saveQueues.get(userId) === current) saveQueues.delete(userId);
+  }
 }
