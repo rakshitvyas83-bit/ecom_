@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { account } from "@/lib/appwrite";
 import { formatCurrency } from "@/utils/format";
 import { card, errorText } from "./styles";
@@ -98,21 +99,40 @@ export default function OrdersTab() {
               </p>
             </div>
           </div>
-          <ul className="mt-4 divide-y divide-forest/10">
-            {order.items.map((item, index) => (
-              <li
-                key={`${item.productId}-${item.size}-${index}`}
-                className="flex justify-between gap-4 py-3 text-sm"
-              >
-                <span className="text-forest/80">
-                  {item.name} · {item.size} × {item.quantity}
-                </span>
-                <span className="shrink-0 text-forest">
-                  {formatCurrency(item.price * item.quantity)}
-                </span>
-              </li>
-            ))}
-          </ul>
+          <details className="mt-4 border-t border-forest/10 pt-4">
+            <summary className="cursor-pointer text-sm font-medium text-forest underline underline-offset-4">
+              View order summary
+            </summary>
+            <ul className="mt-3 divide-y divide-forest/10">
+              {order.items.map((item, index) => (
+                <li
+                  key={`${item.productId}-${item.size}-${index}`}
+                  className="flex justify-between gap-4 py-3 text-sm"
+                >
+                  <span className="text-forest/80">
+                    {item.productId ? (
+                      <Link
+                        href={`/products/${encodeURIComponent(item.productId)}`}
+                        className="font-medium text-forest underline underline-offset-2 hover:text-moss"
+                      >
+                        {item.name}
+                      </Link>
+                    ) : (
+                      <span className="font-medium text-forest">{item.name}</span>
+                    )}
+                    <span> · {item.size} × {item.quantity}</span>
+                  </span>
+                  <span className="shrink-0 text-forest">
+                    {formatCurrency(item.price * item.quantity)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-3 flex justify-between border-t border-forest/10 pt-3 text-sm font-semibold text-forest">
+              <span>Order total</span>
+              <span>{formatCurrency(order.total)}</span>
+            </div>
+          </details>
         </section>
       ))}
     </div>
