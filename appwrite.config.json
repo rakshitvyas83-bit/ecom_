@@ -1,0 +1,399 @@
+{
+    "organizationId": "6a0a0e3e002f11f13fe9",
+    "projectId": "6a0a11c4001d43946f35",
+    "projectName": "Aureva",
+    "endpoint": "https://sgp.cloud.appwrite.io/v1",
+    "settings": {
+        "services": {
+            "account": true,
+            "avatars": true,
+            "databases": true,
+            "locale": true,
+            "health": true,
+            "storage": true,
+            "teams": true,
+            "users": true,
+            "sites": true,
+            "functions": true,
+            "graphql": true,
+            "messaging": true
+        },
+        "protocols": {
+            "rest": true,
+            "graphql": true,
+            "websocket": true
+        },
+        "auth": {
+            "methods": {
+                "jwt": true,
+                "phone": true,
+                "invites": true,
+                "anonymous": true,
+                "email-otp": true,
+                "magic-url": true,
+                "email-password": true
+            },
+            "security": {
+                "duration": 600,
+                "limit": null,
+                "sessionsLimit": null,
+                "passwordHistory": null,
+                "passwordDictionary": false,
+                "personalDataCheck": false,
+                "sessionAlerts": false,
+                "mockNumbers": []
+            }
+        }
+    },
+    "tablesDB": [
+        {
+            "$id": "6a0a12ba002dc6636f1a",
+            "name": "main",
+            "enabled": true
+        }
+    ],
+    "tables": [
+        {
+            "$id": "products",
+            "$permissions": [
+                "create(\"any\")",
+                "read(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "6a0a12ba002dc6636f1a",
+            "name": "products",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "name",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 100,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "description",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 1800,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "fabric",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 20,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "price",
+                    "type": "integer",
+                    "required": true,
+                    "array": false,
+                    "default": null,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807
+                },
+                {
+                    "key": "discounted_price",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "default": null,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807
+                },
+                {
+                    "key": "discountpercent",
+                    "type": "double",
+                    "required": false,
+                    "array": false,
+                    "default": null,
+                    "min": -1.7976931348623157e+308,
+                    "max": 1.7976931348623157e+308
+                },
+                {
+                    "key": "category",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 20,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "stock",
+                    "type": "integer",
+                    "required": true,
+                    "array": false,
+                    "default": null,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807
+                },
+                {
+                    "key": "sizes",
+                    "type": "string",
+                    "required": false,
+                    "array": true,
+                    "size": 5,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "images",
+                    "type": "string",
+                    "required": false,
+                    "array": true,
+                    "size": 50,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "isactive",
+                    "type": "boolean",
+                    "required": true,
+                    "array": false,
+                    "default": null
+                },
+                {
+                    "key": "isfeatured",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                },
+                {
+                    "key": "sizeinventory",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 5000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "isshowcased",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": []
+        },
+        {
+            "$id": "orders",
+            "$permissions": [
+                "read(\"users\")"
+            ],
+            "databaseId": "6a0a12ba002dc6636f1a",
+            "name": "orders",
+            "enabled": true,
+            "rowSecurity": true,
+            "columns": [
+                {
+                    "key": "customerName",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 20,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "customerEmail",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "default": null,
+                    "format": "email"
+                },
+                {
+                    "key": "customerPhone",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 10,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "city",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 20,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "address",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 150,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "state",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 20,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "pincode",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 6,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "items",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 10000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "total",
+                    "type": "bigint",
+                    "required": true,
+                    "array": false,
+                    "default": null,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807
+                },
+                {
+                    "key": "paymentId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 20,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "razorpayOrderId",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 30,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "paymentStatus",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 25,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "courierName",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 50,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "awbCode",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 50,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "userId",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 36,
+                    "default": null,
+                    "encrypt": false
+                }
+            ],
+            "indexes": []
+        },
+        {
+            "$id": "6aea2781000ca799c852",
+            "$permissions": [],
+            "databaseId": "6a0a12ba002dc6636f1a",
+            "name": "carts",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "items",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 10000,
+                    "default": null,
+                    "encrypt": false
+                }
+            ],
+            "indexes": []
+        },
+        {
+            "$id": "6aea27c1003c2f2f8f45",
+            "$permissions": [],
+            "databaseId": "6a0a12ba002dc6636f1a",
+            "name": "wishlists",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "productIds",
+                    "type": "string",
+                    "required": false,
+                    "array": true,
+                    "size": 36,
+                    "default": null,
+                    "encrypt": false
+                }
+            ],
+            "indexes": []
+        }
+    ],
+    "buckets": [
+        {
+            "$id": "6a0a15dd0009b0aacfa9",
+            "$permissions": [
+                "create(\"any\")",
+                "read(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "fileSecurity": false,
+            "name": "product-images",
+            "enabled": true,
+            "maximumFileSize": 50000000,
+            "allowedFileExtensions": [],
+            "compression": "none",
+            "encryption": true,
+            "antivirus": true
+        }
+    ]
+}

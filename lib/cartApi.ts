@@ -1,6 +1,4 @@
-import { AppwriteException } from "appwrite";
-import { account, databases } from "@/lib/appwrite";
-import { CARTS_ID, DATABASE_ID } from "@/lib/constants";
+import { account } from "@/lib/appwrite";
 import type { CartItem } from "@/store/cart-store";
 
 async function getAccountPrefs(userId: string) {
@@ -11,34 +9,19 @@ async function getAccountPrefs(userId: string) {
   return account.getPrefs<Record<string, unknown>>();
 }
 
-async function fetchLegacyCart(userId: string): Promise<CartItem[] | null> {
-  try {
-    const doc = await databases.getDocument(DATABASE_ID, CARTS_ID, userId);
-    const items: unknown = JSON.parse(doc.items || "[]");
-    if (!Array.isArray(items)) {
-      throw new Error("The saved cart has an invalid format.");
-    }
-    return items as CartItem[];
-  } catch (error) {
-    if (error instanceof AppwriteException && error.code === 404) return null;
-    throw error;
-  }
-}
-
 const saveQueues = new Map<string, Promise<void>>();
 
 /** Returns null when the user has no saved cart yet. */
 export async function fetchServerCart(userId: string): Promise<CartItem[] | null> {
   const prefs = await getAccountPrefs(userId);
-  if (Array.isArray(prefs.cartItems)) {
-    return prefs.cartItems as CartItem[];
+  const savedItems = prefs.cartItems;
+  if (savedItems === undefined) {
+    return null;
   }
-
-  const legacyItems = await fetchLegacyCart(userId);
-  if (legacyItems) {
-    await account.updatePrefs({ ...prefs, cartItems: legacyItems });
+  if (!Array.isArray(savedItems)) {
+    throw new Error("The saved cart has an invalid format.");
   }
-  return legacyItems;
+  return savedItems as CartItem[];
 }
 
 export async function saveServerCart(userId: string, items: CartItem[]) {
