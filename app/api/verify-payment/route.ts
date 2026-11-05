@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 import { ID } from "node-appwrite";
 
-import { databases } from "@/lib/appwrite-server";
+import { getDatabases } from "@/lib/appwrite-server";
 import { generateMockShipment } from "@/lib/mockShipping";
 
 export async function POST(req: Request) {
@@ -55,7 +55,7 @@ export async function POST(req: Request) {
     // same shape as what Shiprocket's real API would return.
     const { courierName, awbCode } = generateMockShipment(newOrderId);
 
-    const order = await databases.createDocument(
+    const order = await getDatabases().createDocument(
       process.env.APPWRITE_DATABASE_ID!,
       process.env.APPWRITE_ORDERS_COLLECTION_ID!,
       newOrderId,

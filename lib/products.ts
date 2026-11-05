@@ -246,3 +246,18 @@ export async function listShowcasedProducts(): Promise<Product[]> {
   );
   return response.documents.map(normalizeProduct);
 }
+
+export async function getProductsByIds(ids: string[]): Promise<Product[]> {
+  const unique = Array.from(new Set(ids)).slice(0, 100);
+  if (unique.length === 0) return [];
+
+  const response = await databases.listDocuments<ProductDocument>(
+    DATABASE_ID,
+    PRODUCTS_ID,
+    [Query.equal("$id", unique), Query.limit(100)]
+  );
+
+  return response.documents
+    .filter((document) => toBoolean(document.isactive, true))
+    .map(normalizeProduct);
+}

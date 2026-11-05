@@ -49,6 +49,7 @@ export function CheckoutClient() {
   const totalPrice = subtotal + shipping;
 
   const [loading, setLoading] = useState(false);
+  const [paymentError, setPaymentError] = useState("");
 
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
@@ -74,6 +75,7 @@ export function CheckoutClient() {
   
 
   const handlePayment = async () => {
+    setPaymentError("");
     try {
       if (
   !customerName ||
@@ -84,12 +86,12 @@ export function CheckoutClient() {
   !stateName ||
   !pincode
 ) {
-  alert("Please fill all shipping details");
+  setPaymentError("Please fill all shipping details.");
   return;
 }
 
 if (!/^\d{10}$/.test(customerPhone)) {
-  alert("Please enter a valid 10-digit phone number");
+  setPaymentError("Please enter a valid 10-digit phone number.");
   return;
 }
 
@@ -108,6 +110,18 @@ setLoading(true);
       });
 
       const order = await response.json();
+      if (!response.ok) {
+        throw new Error(order.error || "Unable to create your order. Please try again.");
+      }
+      if (!order.id || !order.amount || !order.currency) {
+        throw new Error("The payment service returned an invalid order. Please try again.");
+      }
+      if (!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) {
+        throw new Error("Online payments are not configured. Please contact the store.");
+      }
+      if (!(window as any).Razorpay) {
+        throw new Error("The payment service did not load. Check your connection and try again.");
+      }
 
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
@@ -196,8 +210,7 @@ if (data.success) {
       });
     } catch (error) {
       console.error(error);
-
-      alert("Something went wrong");
+      setPaymentError(error instanceof Error ? error.message : "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -382,6 +395,7 @@ if (data.success) {
           </div>
 
           <Button
+            variant="secondary"
             onClick={handlePayment}
             disabled={(isBuyNowCheckout && !buyNowReady) || checkoutItems.length === 0 || loading}
             className="mt-7 w-full bg-pearl text-forest hover:bg-champagne"
@@ -395,6 +409,12 @@ if (data.success) {
               "Pay Now"
             )}
           </Button>
+
+          {paymentError && (
+            <p role="alert" className="mt-4 text-sm text-red-200">
+              {paymentError}
+            </p>
+          )}
 
           <p className="mt-4 text-xs leading-5 text-pearl/62">
             Secure checkout powered by Razorpay.
