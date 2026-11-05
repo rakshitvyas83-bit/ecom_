@@ -14,6 +14,7 @@ import { useWishlistStore } from "@/store/wishlist-store";
 
 interface ProductCardProps {
   product: Product;
+  imageRotationDelay?: number;
 }
 
 function ProductPreviewModal({ product, onClose }: { product: Product; onClose: () => void }) {
@@ -220,7 +221,7 @@ function ProductPreviewModal({ product, onClose }: { product: Product; onClose: 
   );
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, imageRotationDelay = 0 }: ProductCardProps) {
   const addItem = useCartStore((state) => state.addItem);
 
   const toggleItem = useWishlistStore(
@@ -256,7 +257,11 @@ export function ProductCard({ product }: ProductCardProps) {
       >
         <Link href={`/products/${product.id}`} className="block">
           <div className="relative">
-            <ImageCarousel images={product.images} alt={product.name} />
+            <ImageCarousel
+              images={product.images}
+              alt={product.name}
+              rotationDelay={imageRotationDelay}
+            />
             <button
               aria-label="Quick preview"
               onClick={(e) => { e.preventDefault(); setShowPreview(true); }}

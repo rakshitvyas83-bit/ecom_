@@ -26,8 +26,12 @@ export function FeaturedProducts() {
           copy="Soft textures, refined colors, and shapes made for graceful movement."
         />
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {featured.map((product) => (
-            <ProductCard key={product.id} product={product} />
+          {featured.map((product, index) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              imageRotationDelay={(index % 4) * 1200}
+            />
           ))}
         </div>
       </div>

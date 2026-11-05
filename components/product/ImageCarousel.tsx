@@ -7,33 +7,72 @@ interface ImageCarouselProps {
   images: string[];
   alt: string;
   aspect?: string;
+  rotationDelay?: number;
 }
 
-export function ImageCarousel({ images, alt, aspect = "aspect-[4/5]" }: ImageCarouselProps) {
+export function ImageCarousel({
+  images,
+  alt,
+  aspect = "aspect-[4/5]",
+  rotationDelay = 0
+}: ImageCarouselProps) {
   const [index, setIndex] = useState(0);
   const [prev, setPrev] = useState<number | null>(null);
+  const [transitioning, setTransitioning] = useState(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [isNearViewport, setIsNearViewport] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const indexRef = useRef(index);
+  const moveRef = useRef<(direction: number) => void>(() => {});
 
   const move = (direction: number) => {
-    setPrev(index);
-    setIndex((v) => (v + direction + images.length) % images.length);
+    const nextIndex = (indexRef.current + direction + images.length) % images.length;
+    setPrev(indexRef.current);
+    setTransitioning(false);
+    indexRef.current = nextIndex;
+    setIndex(nextIndex);
   };
+  moveRef.current = move;
 
-  // Auto-advance every 4s when multiple images
   useEffect(() => {
-    if (images.length <= 1) return;
-    const timer = setInterval(() => move(1), 4000);
-    return () => clearInterval(timer);
-  }, [images.length, index]);
+    const container = containerRef.current;
+    if (!container) return;
 
-  // Clear prev after crossfade completes
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsNearViewport(entry.isIntersecting),
+      { rootMargin: "200px" }
+    );
+    observer.observe(container);
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Stagger the first rotation and only run carousels near the viewport.
   useEffect(() => {
-    if (prev === null) return;
-    const t = setTimeout(() => setPrev(null), 600);
+    if (images.length <= 1 || !isNearViewport) return;
+
+    let interval: ReturnType<typeof setInterval> | undefined;
+    const timeout = setTimeout(() => {
+      moveRef.current(1);
+      interval = setInterval(() => moveRef.current(1), 6000);
+    }, rotationDelay + 4000);
+
+    return () => {
+      clearTimeout(timeout);
+      if (interval) clearInterval(interval);
+    };
+  }, [images.length, isNearViewport, rotationDelay]);
+
+  // Keep the previous image visible until the next image has loaded and faded in.
+  useEffect(() => {
+    if (prev === null || !transitioning) return;
+    const t = setTimeout(() => {
+      setPrev(null);
+      setTransitioning(false);
+    }, 750);
     return () => clearTimeout(t);
-  }, [prev]);
+  }, [prev, transitioning]);
 
   const handleTouchStart = (e: React.TouchEvent) => setTouchStart(e.targetTouches[0].clientX);
   const handleTouchMove = (e: React.TouchEvent) => setTouchEnd(e.targetTouches[0].clientX);
@@ -59,7 +98,11 @@ export function ImageCarousel({ images, alt, aspect = "aspect-[4/5]" }: ImageCar
           key={`prev-${prev}`}
           src={images[prev]}
           alt={alt}
-          className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500"
+          loading="lazy"
+          decoding="async"
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-in-out ${
+            transitioning ? "opacity-0" : "opacity-100"
+          }`}
         />
       )}
 
@@ -68,7 +111,14 @@ export function ImageCarousel({ images, alt, aspect = "aspect-[4/5]" }: ImageCar
         key={`curr-${index}`}
         src={images[index]}
         alt={alt}
-        className="h-full w-full object-cover transition-opacity duration-500 opacity-100 group-hover:scale-105 transition-transform duration-700"
+        loading="lazy"
+        decoding="async"
+        onLoad={() => {
+          if (prev !== null) setTransitioning(true);
+        }}
+        className={`h-full w-full object-cover transition-opacity duration-700 ease-in-out group-hover:scale-105 ${
+          prev === null || transitioning ? "opacity-100" : "opacity-0"
+        }`}
       />
 
       {images.length > 1 ? (
