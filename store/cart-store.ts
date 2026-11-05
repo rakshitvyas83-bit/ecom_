@@ -30,6 +30,7 @@ interface CartState {
   increase: (productId: string, size: ProductSize) => void;
   decrease: (productId: string, size: ProductSize) => void;
   clearCart: () => void;
+  setItems: (items: CartItem[]) => void;
   openCart: () => void;
   closeCart: () => void;
   clearNotice: () => void;
@@ -201,6 +202,7 @@ export const useCartStore = create<CartState>()(
             .filter((item) => item.quantity > 0)
         })),
       clearCart: () => set({ items: [] }),
+      setItems: (items) => set({ items }),
       openCart: () => set({ isOpen: true }),
       closeCart: () => set({ isOpen: false }),
       clearNotice: () => set({ notice: null }),
@@ -221,3 +223,27 @@ export const getCartSubtotal = (items: CartItem[]) =>
 
 export const getCartCount = (items: CartItem[]) =>
   items.reduce((total, item) => total + item.quantity, 0);
+
+export const mergeCartItems = (a: CartItem[], b: CartItem[]): CartItem[] => {
+  const merged = new Map<string, CartItem>();
+
+  for (const item of [...a, ...b]) {
+    const key = `${item.productId}-${item.size}`;
+    const existing = merged.get(key);
+
+    merged.set(
+      key,
+      existing
+        ? {
+            ...existing,
+            quantity: Math.min(
+              existing.quantity + item.quantity,
+              Math.max(existing.stock, item.stock)
+            )
+          }
+        : item
+    );
+  }
+
+  return Array.from(merged.values());
+};

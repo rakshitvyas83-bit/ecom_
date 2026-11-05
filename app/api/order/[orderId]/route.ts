@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { databases } from "@/lib/appwrite-server";
+import { getDatabases } from "@/lib/appwrite-server";
 
 export async function GET(
   req: Request,
@@ -8,7 +8,7 @@ export async function GET(
   try {
     const { orderId } = await params;
 
-    const order = await databases.getDocument(
+    const order = await getDatabases().getDocument(
       process.env.APPWRITE_DATABASE_ID!,
       process.env.APPWRITE_ORDERS_COLLECTION_ID!,
       orderId

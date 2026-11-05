@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Heart, Menu, ShoppingBag, X } from "lucide-react";
+import { Heart, Menu, ShoppingBag, User, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 import { getCartCount, useCartStore } from "@/store/cart-store";
 import {
   getWishlistCount,
@@ -18,6 +19,7 @@ const links = [
 
 export function Navbar() {
   const pathname = usePathname();
+  const { user } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
@@ -35,6 +37,9 @@ export function Navbar() {
 
   const wishlistCount =
   getWishlistCount(wishlistItems);
+
+  const accountHref = user ? "/account" : "/login";
+  const initial = (user?.name || user?.email || "?").trim()[0]?.toUpperCase();
 
   const isHome = pathname === "/";
   const mobileTransparentMode = isHome && isMobile;
@@ -171,6 +176,25 @@ export function Navbar() {
 
   <div className="col-start-3 flex items-center justify-self-end gap-2">
     <Link
+      href={accountHref}
+      aria-label={user ? "Manage your account" : "Log in to your account"}
+      className={`relative flex items-center gap-1.5 rounded-full px-2.5 py-2.5 text-xs font-medium transition sm:gap-2 sm:px-3 sm:text-sm ${
+        showSolidNavbar
+          ? "border border-[#b88952]/25 bg-white/40 text-[#6f402c] hover:bg-[#f6e7ca]"
+          : "border border-white/25 bg-black/20 text-[#fff4e3] hover:bg-white/16"
+      }`}
+    >
+      {user ? (
+        <span className="grid h-[19px] w-[19px] shrink-0 place-items-center text-[15px] font-semibold leading-none">
+          {initial}
+        </span>
+      ) : (
+        <User size={18} />
+      )}
+      <span>{user ? "Account" : "Log in"}</span>
+    </Link>
+
+    <Link
       href="/wishlist"
       className={`relative rounded-full p-3 transition ${
         showSolidNavbar
@@ -267,6 +291,15 @@ export function Navbar() {
               <ShoppingBag />
               Cart ({count})
             </button>
+
+            <Link
+              href={accountHref}
+              onClick={() => setMenuOpen(false)}
+              className="flex items-center gap-3 text-lg text-[#6f402c]"
+            >
+              <User />
+              {user ? "My account" : "Log in"}
+            </Link>
           </div>
         </div>
       )}
