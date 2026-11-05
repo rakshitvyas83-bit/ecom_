@@ -82,8 +82,12 @@ export function ShopClient() {
         </div>
       </div>
       <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {visibleProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
+        {visibleProducts.map((product, index) => (
+          <ProductCard
+            key={product.id}
+            product={product}
+            imageRotationDelay={(index % 4) * 1200}
+          />
         ))}
       </div>
     </div>
