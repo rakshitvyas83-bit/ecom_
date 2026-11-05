@@ -88,7 +88,12 @@ export function AccountSync() {
 
         // ---- wishlist ----
         const localIds = useWishlistStore.getState().items.map((product) => product.id);
-        const serverIds = await fetchServerWishlist(userId);
+        let serverIds: string[] | null = null;
+        try {
+          serverIds = await fetchServerWishlist(userId);
+        } catch (error) {
+          console.error("Wishlist sync failed; continuing cart sync.", error);
+        }
 
         let wishlistIds: string[];
         if (owner === null) {
