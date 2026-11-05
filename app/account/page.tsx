@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import RequireAuth from "@/components/auth/RequireAuth";
 import ProfileTab from "@/components/account/ProfileTab";
 import SecurityTab from "@/components/account/SecurityTab";
+import OrdersTab from "@/components/account/OrdersTab";
 import { card, ghostBtn } from "@/components/account/styles";
 import { useAuth } from "@/context/AuthContext";
 
@@ -20,7 +21,6 @@ type TabId = (typeof TABS)[number]["id"];
 function AccountContent() {
   const { user, logout } = useAuth();
   const router = useRouter();
-  // Switch the default to "orders" once stage 6 (orders list) is in.
   const [tab, setTab] = useState<TabId>("profile");
 
   async function onLogout() {
@@ -56,9 +56,7 @@ function AccountContent() {
 
       <div className="mt-8">
         {tab === "orders" && (
-          <div className={card}>
-            <p className="text-sm text-forest/70">Your orders will appear here once orders are linked to accounts.</p>
-          </div>
+          <OrdersTab />
         )}
         {tab === "saved" && (
           <div className={card}>
