@@ -6,6 +6,7 @@ import { ID } from "node-appwrite";
 
 import { getAuthenticatedUserId, getDatabases } from "@/lib/appwrite-server";
 import { generateMockShipment } from "@/lib/mockShipping";
+import { DATABASE_ID, ORDERS_ID } from "@/lib/constants";
 
 export async function POST(req: Request) {
   try {
@@ -68,8 +69,8 @@ export async function POST(req: Request) {
     const { courierName, awbCode } = generateMockShipment(newOrderId);
 
     const order = await getDatabases().createDocument(
-      process.env.APPWRITE_DATABASE_ID!,
-      process.env.APPWRITE_ORDERS_COLLECTION_ID!,
+      DATABASE_ID,
+      ORDERS_ID,
       newOrderId,
       {
         userId,
@@ -91,6 +92,7 @@ export async function POST(req: Request) {
         razorpayOrderId: razorpay_order_id,
 
         paymentStatus: "paid",
+        status: "placed",
 
         courierName,
         awbCode,

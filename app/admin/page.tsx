@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import AdminProductForm from "@/components/AdminProductForm";
 import AdminProductList from "@/components/AdminProductList";
+import Link from "next/link";
 
 import { account } from "@/lib/appwrite";
 
@@ -13,18 +14,22 @@ export default function AdminPage() {
 
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    checkUser();
-  }, []);
-
-  const checkUser = async () => {
+  const checkUser = useCallback(async () => {
     try {
-      await account.get();
+      const user = await account.get();
+      if (!user.labels.includes("admin")) {
+        router.replace("/admin/login");
+        return;
+      }
       setLoading(false);
     } catch (error) {
       router.push("/admin/login");
     }
-  };
+  }, [router]);
+
+  useEffect(() => {
+    void checkUser();
+  }, [checkUser]);
 
   const handleLogout = async () => {
   try {
@@ -48,12 +53,17 @@ export default function AdminPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Admin Panel</h1>
 
-        <button
-          onClick={handleLogout}
-          className="bg-red-500 text-white px-4 py-2 rounded"
-        >
-          Logout
-        </button>
+        <div className="flex items-center gap-3">
+          <Link href="/admin/orders" className="rounded bg-forest px-4 py-2 text-white">
+            Manage orders
+          </Link>
+          <button
+            onClick={handleLogout}
+            className="rounded bg-red-500 px-4 py-2 text-white"
+          >
+            Logout
+          </button>
+        </div>
       </div>
 
       <AdminProductForm />

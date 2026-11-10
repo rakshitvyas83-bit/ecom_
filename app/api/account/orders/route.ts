@@ -30,6 +30,7 @@ export async function GET(req: Request) {
         $createdAt: order.$createdAt,
         total: order.total,
         paymentStatus: order.paymentStatus,
+        status: order.status || "placed",
         items: order.items,
       })),
     });
