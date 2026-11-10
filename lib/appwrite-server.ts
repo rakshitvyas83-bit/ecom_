@@ -12,8 +12,12 @@ function getAppwriteClient() {
 }
 
 export async function getAuthenticatedUserId(jwt: string) {
-  const user = await new Account(getAppwriteClient().setJWT(jwt)).get();
+  const user = await getAuthenticatedUser(jwt);
   return user.$id;
+}
+
+export async function getAuthenticatedUser(jwt: string) {
+  return new Account(getAppwriteClient().setJWT(jwt)).get();
 }
 
 export function getDatabases() {

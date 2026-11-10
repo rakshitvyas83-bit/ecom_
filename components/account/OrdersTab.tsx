@@ -19,6 +19,7 @@ interface AccountOrder {
   $createdAt: string;
   total: number;
   paymentStatus?: string;
+  status: string;
   items: OrderItem[];
 }
 
@@ -95,7 +96,10 @@ export default function OrdersTab() {
             <div className="text-right">
               <p className="font-semibold text-forest">{formatCurrency(order.total)}</p>
               <p className="mt-1 text-sm capitalize text-forest/60">
-                {order.paymentStatus || "Processing"}
+                {order.status}
+              </p>
+              <p className="text-xs capitalize text-forest/50">
+                Payment: {order.paymentStatus || "Processing"}
               </p>
             </div>
           </div>
