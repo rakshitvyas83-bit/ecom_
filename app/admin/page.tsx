@@ -8,6 +8,7 @@ import AdminProductList from "@/components/AdminProductList";
 import Link from "next/link";
 
 import { account } from "@/lib/appwrite";
+import { hasAdminLabel } from "@/lib/admin-auth";
 
 export default function AdminPage() {
   const router = useRouter();
@@ -17,7 +18,7 @@ export default function AdminPage() {
   const checkUser = useCallback(async () => {
     try {
       const user = await account.get();
-      if (!user.labels.includes("admin")) {
+      if (!hasAdminLabel(user.labels)) {
         router.replace("/admin/login");
         return;
       }

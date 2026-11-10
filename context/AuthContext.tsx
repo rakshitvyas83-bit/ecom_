@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { ID, OAuthProvider, type Models } from "appwrite";
 import { account } from "@/lib/appwrite";
+import { hasAdminLabel } from "@/lib/admin-auth";
 
 type AppUser = Models.User<Models.Preferences>;
 
@@ -76,7 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     () => ({
       user,
       loading,
-      isAdmin: Boolean(user?.labels?.includes("admin")),
+      isAdmin: hasAdminLabel(user?.labels),
       login,
       signup,
       loginWithGoogle,

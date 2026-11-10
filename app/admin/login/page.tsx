@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { account } from "@/lib/appwrite";
+import { hasAdminLabel } from "@/lib/admin-auth";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -12,6 +13,18 @@ export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  useEffect(() => {
+    let active = true;
+    account.get().then((user) => {
+      if (active && hasAdminLabel(user.labels)) router.replace("/admin");
+    }).catch(() => {
+      // No existing session; remain on the login form.
+    });
+    return () => {
+      active = false;
+    };
+  }, [router]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -19,14 +32,31 @@ export default function AdminLoginPage() {
     setError("");
 
     try {
+      const currentUser = await account.get().catch(() => null);
+      if (currentUser && hasAdminLabel(currentUser.labels) && currentUser.email === email.trim()) {
+        router.replace("/admin");
+        return;
+      }
+
+      if (currentUser) {
+        await account.deleteSession("current");
+      }
+
       await account.createEmailPasswordSession(email, password);
 
-      router.push("/admin");
-    } catch (err: any) {
-      setError(err.message);
-    }
+      const user = await account.get();
+      if (!hasAdminLabel(user.labels)) {
+        await account.deleteSession("current");
+        setError("This account does not have the admin label. Sign in with an admin account.");
+        return;
+      }
 
-    setLoading(false);
+      router.replace("/admin");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Unable to sign in.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

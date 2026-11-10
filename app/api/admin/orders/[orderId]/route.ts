@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getAuthenticatedUser, getDatabases } from "@/lib/appwrite-server";
 import { DATABASE_ID, ORDERS_ID } from "@/lib/constants";
 import { isOrderStatus } from "@/lib/order-status";
+import { hasAdminLabel } from "@/lib/admin-auth";
 
 export async function PATCH(
   req: Request,
@@ -15,7 +16,7 @@ export async function PATCH(
 
   try {
     const user = await getAuthenticatedUser(jwt);
-    if (!user.labels.includes("admin")) {
+    if (!hasAdminLabel(user.labels)) {
       return NextResponse.json({ error: "Admin access required." }, { status: 403 });
     }
   } catch {
