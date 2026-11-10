@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { getAuthenticatedUser, getDatabases } from "@/lib/appwrite-server";
 import { DATABASE_ID, ORDERS_ID } from "@/lib/constants";
 import { isOrderStatus } from "@/lib/order-status";
+import { hasAdminLabel } from "@/lib/admin-auth";
 
 async function getAdmin(req: Request) {
   const authorization = req.headers.get("authorization");
@@ -11,7 +12,7 @@ async function getAdmin(req: Request) {
 
   try {
     const user = await getAuthenticatedUser(jwt);
-    return user.labels.includes("admin") ? user : null;
+    return hasAdminLabel(user.labels) ? user : null;
   } catch {
     return null;
   }

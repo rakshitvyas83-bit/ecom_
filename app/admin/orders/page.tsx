@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { account } from "@/lib/appwrite";
 import { formatCurrency } from "@/utils/format";
 import { ORDER_STATUSES, type OrderStatus } from "@/lib/order-status";
+import { hasAdminLabel } from "@/lib/admin-auth";
 
 interface OrderItem {
   productId: string;
@@ -80,7 +81,7 @@ export default function AdminOrdersPage() {
   useEffect(() => {
     let active = true;
     account.get().then((user) => {
-      if (!user.labels.includes("admin")) router.replace("/admin/login");
+      if (!hasAdminLabel(user.labels)) router.replace("/admin/login");
       else if (active) void loadOrders();
     }).catch(() => router.replace("/admin/login"));
 
