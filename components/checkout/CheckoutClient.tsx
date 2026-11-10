@@ -102,7 +102,6 @@ if (!/^\d{10}$/.test(customerPhone)) {
 
 setLoading(true);
 
-      const { jwt } = await account.createJWT();
       const response = await fetch("/api/create-order", {
         method: "POST",
 
@@ -144,6 +143,7 @@ setLoading(true);
 
         handler: async function (response: any) {
   try {
+    const { jwt } = await account.createJWT();
     const verifyResponse = await fetch(
       "/api/verify-payment",
       {
@@ -192,12 +192,16 @@ if (data.success) {
     cartSyncFailed ? "&cartSync=failed" : ""
   }`;
 } else {
-      alert("Payment verification failed");
+      setPaymentError(
+        data.error ||
+          "We couldn't confirm your order. If your payment went through, do not pay again; contact support."
+      );
     }
   } catch (error) {
-    console.log(error);
-
-    alert("Something went wrong");
+    console.error("Payment verification request failed:", error);
+    setPaymentError(
+      "We couldn't confirm your order. If your payment went through, do not pay again; contact support."
+    );
   }
 },
 
