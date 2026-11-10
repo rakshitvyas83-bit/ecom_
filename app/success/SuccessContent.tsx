@@ -29,6 +29,7 @@ interface Order {
 export default function SuccessPage() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
+  const cartSyncFailed = searchParams.get("cartSync") === "failed";
 
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
@@ -93,6 +94,11 @@ export default function SuccessPage() {
         <h1 className="text-4xl font-bold">Order Successful 🎉</h1>
 
         <p className="mt-4 text-gray-600">Thank you for shopping with us.</p>
+        {cartSyncFailed && (
+          <p role="status" className="mt-4 rounded-xl bg-amber-50 p-3 text-sm text-amber-800">
+            Your order is confirmed, but we couldn&apos;t sync the empty cart to your account. Please refresh your cart before placing another order.
+          </p>
+        )}
 
         <p className="mt-2 text-sm text-gray-500">
           Order ID: <span className="font-mono">{order.$id}</span>

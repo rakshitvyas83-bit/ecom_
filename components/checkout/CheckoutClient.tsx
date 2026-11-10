@@ -13,14 +13,18 @@ import {
 } from "@/store/cart-store";
 import { formatCurrency } from "@/utils/format";
 import { account } from "@/lib/appwrite";
+import { useAuth } from "@/context/AuthContext";
+import { saveServerCart } from "@/lib/cartApi";
 
 const inputClass =
   "min-h-12 rounded-full border border-forest/10 bg-pearl/92 px-5 outline-none transition focus:border-gold";
 
 export function CheckoutClient() {
+  const { user } = useAuth();
   const searchParams = useSearchParams();
   const items = useCartStore((state) => state.items);
   const buyNowItem = useCartStore((state) => state.buyNowItem);
+  const clearCart = useCartStore((state) => state.clearCart);
   const clearBuyNowItem = useCartStore((state) => state.clearBuyNowItem);
   const checkoutMode = useCartStore((state) => state.checkoutMode);
   const [storedBuyNowItem, setStoredBuyNowItem] = useState<ReturnType<
@@ -173,7 +177,20 @@ setLoading(true);
 
 if (data.success) {
   clearBuyNowItem();
-  window.location.href = `/success?orderId=${data.orderId}`;
+  let cartSyncFailed = false;
+  if (!isBuyNowCheckout) {
+    clearCart();
+    try {
+      if (!user) throw new Error("The signed-in account is unavailable.");
+      await saveServerCart(user.$id, []);
+    } catch (error) {
+      cartSyncFailed = true;
+      console.error("Order succeeded, but the account cart could not be cleared:", error);
+    }
+  }
+  window.location.href = `/success?orderId=${encodeURIComponent(data.orderId)}${
+    cartSyncFailed ? "&cartSync=failed" : ""
+  }`;
 } else {
       alert("Payment verification failed");
     }
