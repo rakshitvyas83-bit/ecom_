@@ -224,10 +224,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { HeroScrollStrip } from "./HeroScrollStrip";
 import { BannerSlider } from "./BannerSlider";
-
-const headlineWords = ["KOTA", "KARIGARI"];
 
 function WeavePattern({ className }: { className?: string }) {
   return (
@@ -253,86 +250,41 @@ export function Hero() {
         <WeavePattern className="pointer-events-none absolute inset-0 h-full w-full text-forest/[0.05]" />
         <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-white/50 to-transparent" />
 
-        <div className="luxury-container relative grid min-h-[calc(100vh-80px)] items-center gap-16 py-14 md:grid-cols-[1fr_0.85fr]">
+        <div className="luxury-container relative flex flex-col gap-5 py-8 sm:flex-row sm:items-center sm:justify-between sm:py-10">
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
+            transition={{ duration: shouldReduceMotion ? 0 : 0.5 }}
             className="relative z-10"
           >
-            <p className="mb-5 text-xs font-semibold uppercase tracking-[0.32em] text-gold">
+            <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.28em] text-gold sm:text-xs">
               Exquisite. Elegant. Enchanting.
             </p>
-
-            <h1 className="flex flex-col font-serif leading-[0.9] text-forest">
-              {headlineWords.map((word, i) => (
-                <motion.span
-                  key={word}
-                  initial={{ opacity: 0, y: 40 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    duration: 0.7,
-                    delay: shouldReduceMotion ? 0 : 0.15 + i * 0.12,
-                  }}
-                  className="text-6xl md:text-8xl"
-                >
-                  {word}
-                </motion.span>
-              ))}
+            <h1 className="font-serif text-3xl leading-tight text-forest sm:text-4xl md:text-5xl">
+              KOTA KARIGARI
             </h1>
-
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-              className="mt-1 bg-gradient-to-r from-forest via-rose to-gold bg-clip-text text-2xl font-medium tracking-[0.07em] text-transparent"
-            >
-              {/* fashion */}
-            </motion.p>
-
-            <p className="mt-6 max-w-xl text-lg leading-8 text-moss">
-              A contemporary ethnic and Indo-western fashion brand offering elegant,
-              comfort-driven apparel in breathable fabrics like cotton, Kota doriya
-              and Mal cotton, blending traditional Indian craftsmanship with modern style.
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-moss sm:text-base">
+              Contemporary ethnic and Indo-western styles, crafted for comfort with
+              breathable fabrics and traditional Indian detailing.
             </p>
-
-            <div className="mt-9 flex flex-wrap gap-4">
-              <Button href="/shop">
-                Shop Collection <ArrowRight size={17} />
-              </Button>
-              <Button href="/shop?sort=newest" variant="secondary">
-                New Arrivals
-              </Button>
-            </div>
           </motion.div>
 
-          {/* single hero shot, offset right, swatch-card framing */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.97 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative min-h-[440px] md:min-h-[640px]"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: shouldReduceMotion ? 0 : 0.5,
+              delay: shouldReduceMotion ? 0 : 0.1,
+            }}
+            className="relative z-10 flex flex-wrap gap-3"
           >
-            <div
-              className="absolute right-0 top-0 h-full w-[86%] overflow-hidden border border-gold/30 shadow-luxury"
-              style={{
-                clipPath: "polygon(0 0, 100% 0, 100% 100%, 10% 100%, 0 90%)",
-              }}
-            >
-              <img
-                src="/pics/IMG-20260512-WA0295.jpg"
-                alt="KOTA KARIGARI ivory ethnic wear in Kota doriya"
-                className="h-full w-full object-cover object-top"
-              />
-            </div>
-
-            {/* loom-pin accent, top-left of the frame */}
-            <span className="absolute -left-3 top-10 h-6 w-6 rounded-full border border-gold/50 bg-satin" />
+            <Button href="/shop">
+              Shop Collection <ArrowRight size={17} />
+            </Button>
+            <Button href="/shop?sort=newest" variant="secondary">
+              New Arrivals
+            </Button>
           </motion.div>
-        </div>
-
-        <div className="border-t border-forest/8">
-          <HeroScrollStrip />
         </div>
       </section>
     </>

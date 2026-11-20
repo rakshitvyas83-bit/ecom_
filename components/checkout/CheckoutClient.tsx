@@ -102,11 +102,13 @@ if (!/^\d{10}$/.test(customerPhone)) {
 
 setLoading(true);
 
+      const { jwt } = await account.createJWT();
       const response = await fetch("/api/create-order", {
         method: "POST",
 
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${jwt}`,
         },
 
         body: JSON.stringify({
@@ -128,6 +130,7 @@ setLoading(true);
         throw new Error("The payment service did not load. Check your connection and try again.");
       }
 
+      let paymentFailed = false;
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
 
@@ -221,17 +224,25 @@ if (data.success) {
         theme: {
           color: "#4F2432",
         },
+        modal: {
+          ondismiss: () => {
+            if (!paymentFailed) {
+              setPaymentError("Payment was cancelled. No payment was completed.");
+            }
+          },
+        },
       };
 
       const razorpay = new (window as any).Razorpay(options);
 
-      razorpay.open();
-
       razorpay.on("payment.failed", function (response: any) {
-        console.log(response.error);
-
-        alert("Payment Failed");
+        paymentFailed = true;
+        console.error("Razorpay payment failed:", response.error);
+        setPaymentError(
+          response.error?.description || "Payment could not be completed. Please try again."
+        );
       });
+      razorpay.open();
     } catch (error) {
       console.error(error);
       setPaymentError(error instanceof Error ? error.message : "Something went wrong. Please try again.");
