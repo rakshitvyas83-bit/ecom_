@@ -71,7 +71,10 @@ export async function GET(req: Request) {
   } catch (error) {
     console.error("Failed to load admin orders:", error);
     return NextResponse.json(
-      { error: "Unable to load orders. Confirm the Orders table has a status column." },
+      {
+        error:
+          "Unable to load orders. Check the Vercel function logs and ensure APPWRITE_API_KEY has documents.read scope.",
+      },
       { status: 500 }
     );
   }

@@ -156,13 +156,14 @@ export default function AdminOrdersPage() {
               <th className="px-4 py-3">Total</th>
               <th className="px-4 py-3">Payment</th>
               <th className="px-4 py-3">Order status</th>
+              <th className="px-4 py-3">Summary</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-forest/10">
             {loading ? (
-              <tr><td colSpan={6} className="px-4 py-10 text-center text-forest/70">Loading orders…</td></tr>
+              <tr><td colSpan={7} className="px-4 py-10 text-center text-forest/70">Loading orders…</td></tr>
             ) : orders.length === 0 ? (
-              <tr><td colSpan={6} className="px-4 py-10 text-center text-forest/70">No orders found.</td></tr>
+              <tr><td colSpan={7} className="px-4 py-10 text-center text-forest/70">No orders found.</td></tr>
             ) : orders.map((order) => (
               <tr key={order.$id} className="align-top text-forest">
                 <td className="px-4 py-4">
@@ -216,6 +217,14 @@ export default function AdminOrdersPage() {
                       <option key={status} value={status}>{status}</option>
                     ))}
                   </select>
+                </td>
+                <td className="px-4 py-4">
+                  <Link
+                    href={`/admin/orders/${encodeURIComponent(order.$id)}`}
+                    className="inline-flex whitespace-nowrap rounded-full bg-forest px-4 py-2 text-xs font-medium text-pearl transition hover:bg-[#421d29]"
+                  >
+                    Order summary
+                  </Link>
                 </td>
               </tr>
             ))}
