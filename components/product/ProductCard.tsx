@@ -298,9 +298,11 @@ export function ProductCard({ product, imageRotationDelay = 0 }: ProductCardProp
               </Link>
               <p className="mt-1 text-sm text-moss">{product.category}</p>
             </div>
-            <span className={`mt-1 whitespace-nowrap text-xs font-semibold ${isOut ? "text-rose" : "text-moss"}`}>
-              {isOut ? "Out of stock" : `${product.stock} left`}
-            </span>
+            {isOut && (
+              <span className="mt-1 whitespace-nowrap text-xs font-semibold text-rose">
+                Out of stock
+              </span>
+            )}
           </div>
           <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
             <span className="font-semibold text-forest">{formatCurrency(currentPrice)}</span>

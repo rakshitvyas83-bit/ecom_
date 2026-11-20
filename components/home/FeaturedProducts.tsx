@@ -18,14 +18,14 @@ export function FeaturedProducts() {
   const featured = products.filter((product) => product.featured).slice(0, 12);
 
   return (
-    <section className="bg-mist/70 py-20">
+    <section className="bg-mist/70 py-12">
       <div className="luxury-container">
         <SectionHeader
           eyebrow="KOTA KARIGARI selection"
           title="Featured Products"
           copy="Soft textures, refined colors, and shapes made for graceful movement."
         />
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 sm:gap-8 lg:grid-cols-4">
           {featured.map((product, index) => (
             <ProductCard
               key={product.id}

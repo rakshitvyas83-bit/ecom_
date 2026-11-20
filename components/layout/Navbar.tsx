@@ -152,7 +152,7 @@ export function Navbar() {
     className="col-start-1 justify-self-start transition hover:-translate-y-0.5 sm:justify-self-auto"
   >
     <img
-      src={showSolidNavbar ? "/pics/logo.png" : "/pics/logo2.png"}
+      src={showSolidNavbar ? "/pics/logo.png" : "/pics/logo.png"}
       alt="Kota Karigari"
       className="relative h-14 w-auto drop-shadow-[0_2px_10px_rgba(0,0,0,0.45)] sm:h-24 sm:w-[190px]"
     />
@@ -178,7 +178,7 @@ export function Navbar() {
     <Link
       href={accountHref}
       aria-label={user ? "Manage your account" : "Log in to your account"}
-      className={`relative flex items-center gap-1.5 rounded-full px-2.5 py-2.5 text-xs font-medium transition sm:gap-2 sm:px-3 sm:text-sm ${
+      className={`relative hidden items-center gap-1.5 rounded-full px-2.5 py-2.5 text-xs font-medium transition sm:gap-2 sm:px-3 sm:text-sm md:flex ${
         showSolidNavbar
           ? "border border-[#b88952]/25 bg-white/40 text-[#6f402c] hover:bg-[#f6e7ca]"
           : "border border-white/25 bg-black/20 text-[#fff4e3] hover:bg-white/16"
