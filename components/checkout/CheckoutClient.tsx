@@ -172,7 +172,7 @@ setLoading(true);
       if (!order.id || !order.amount || !order.currency) {
         throw new Error("The payment service returned an invalid order. Please try again.");
       }
-      if (!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) {
+      if (typeof order.keyId !== "string" || !order.keyId) {
         throw new Error("Online payments are not configured. Please contact the store.");
       }
       if (!(window as any).Razorpay) {
@@ -181,7 +181,7 @@ setLoading(true);
 
       let paymentFailed = false;
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        key: order.keyId,
 
         amount: order.amount,
 

@@ -260,7 +260,7 @@ export function Hero() {
             <h1 className="font-serif text-2xl leading-tight text-forest sm:text-3xl md:text-4xl">
               Kota Karigari – Heritage|Elegance|Artistry
             </h1>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-moss sm:text-base">
+            <p className="mt-2 max-w-2xl text-justify text-sm leading-6 text-moss sm:text-base">
               From the royal land of Rajasthan comes a textile that tells a beautiful story of craftmanship, elegance and timeless tradition – Kota Doria.
               <br />
               <br />

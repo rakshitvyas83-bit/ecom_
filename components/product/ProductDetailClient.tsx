@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { ProductCard } from "@/components/product/ProductCard";
+import { sortProductSizes } from "@/lib/catalog";
 import { createCartItem, saveBuyNowItem, useCartStore } from "@/store/cart-store";
 import type { Product, ProductSize } from "@/types/product";
 import { formatCurrency, getProductPrice } from "@/utils/format";
@@ -20,7 +21,8 @@ export function ProductDetailClient({ product, related }: ProductDetailClientPro
   const [prevIndex, setPrevIndex] = useState<number | null>(null);
   const [fading, setFading] = useState(false);
   const [touchStart, setTouchStart] = useState(0);
-  const [size, setSize] = useState<ProductSize>(product.sizes[0]);
+  const sortedSizes = sortProductSizes(product.sizes);
+  const [size, setSize] = useState<ProductSize>(sortedSizes[0]);
   const [quantity, setQuantity] = useState(1);
   const addItem = useCartStore((state) => state.addItem);
   const setBuyNowItem = useCartStore((state) => state.setBuyNowItem);
@@ -162,7 +164,7 @@ export function ProductDetailClient({ product, related }: ProductDetailClientPro
           <div className="mt-7">
             <p className="mb-3 text-sm font-semibold">Select size</p>
             <div className="flex flex-wrap gap-3">
-              {product.sizes.map((item) => (
+              {sortedSizes.map((item) => (
                 <button
                   key={item}
                   onClick={() => setSize(item)}
