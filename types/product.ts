@@ -18,6 +18,7 @@ export interface Product {
   fabric: string;
   price: number;
   discountPrice?: number;
+  displayOrder?: number;
   stock: number;
   sizes: ProductSize[];
   sizeInventory: SizeInventory[];
