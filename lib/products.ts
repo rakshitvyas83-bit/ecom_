@@ -13,6 +13,7 @@ type ProductDocument = Models.Document & {
   discounted_price?: number;
   discountpercent?: number;
   discountPercent?: number;
+  displayOrder?: number;
   category?: ProductCategory;
   stock?: number;
   sizes?: string[] | string;
@@ -140,18 +141,30 @@ const images = rawImages.map(toImageUrl);
     popular: toBoolean(document.popular, false),
     isactive,
     isshowcased: toBoolean(document.isshowcased, false),
+    displayOrder:
+      typeof document.displayOrder === "number" ? document.displayOrder : undefined,
     createdAt: document.createdAt ?? document.$createdAt
   };
 }
 
 export async function listProducts(options: { includeInactive?: boolean } = {}): Promise<Product[]> {
-  const response = await databases.listDocuments<ProductDocument>(
-    DATABASE_ID,
-    PRODUCTS_ID,
-    [Query.orderDesc("$createdAt")]
-  );
+  const documents: ProductDocument[] = [];
+  let cursor: ProductDocument | undefined;
 
-  return response.documents
+  while (true) {
+    const queries = [Query.orderDesc("$createdAt"), Query.limit(100)];
+    if (cursor) queries.push(Query.cursorAfter(cursor.$id));
+    const response = await databases.listDocuments<ProductDocument>(
+      DATABASE_ID,
+      PRODUCTS_ID,
+      queries
+    );
+    documents.push(...response.documents);
+    if (response.documents.length < 100) break;
+    cursor = response.documents[response.documents.length - 1];
+  }
+
+  return documents
     .filter((document) => options.includeInactive || toBoolean(document.isactive, true))
     .map(normalizeProduct);
 }

@@ -1,7 +1,7 @@
 import type { Product, ProductCategory, ProductSize } from "@/types/product";
 import { getProductPrice } from "@/utils/format";
 
-export type SortKey = "newest" | "price-asc" | "price-desc" | "popular";
+export type SortKey = "manual" | "newest" | "price-asc" | "price-desc" | "popular";
 
 export interface ProductFilters {
   size?: ProductSize | "All";
@@ -9,6 +9,18 @@ export interface ProductFilters {
   availability?: "All" | "In stock" | "Out of stock";
   maxPrice?: number;
   sort?: SortKey;
+}
+
+export function compareProductsByDisplayOrder(a: Product, b: Product): number {
+  if (typeof a.displayOrder === "number" && typeof b.displayOrder === "number") {
+    return (
+      a.displayOrder - b.displayOrder ||
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  }
+  if (typeof a.displayOrder === "number") return -1;
+  if (typeof b.displayOrder === "number") return 1;
+  return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
 }
 
 export function filterProducts(products: Product[], filters: ProductFilters): Product[] {
@@ -30,6 +42,9 @@ export function filterProducts(products: Product[], filters: ProductFilters): Pr
   });
 
   return [...filtered].sort((a, b) => {
+    if (filters.sort === "manual") {
+      return compareProductsByDisplayOrder(a, b);
+    }
     if (filters.sort === "price-asc") {
       return getProductPrice(a) - getProductPrice(b);
     }

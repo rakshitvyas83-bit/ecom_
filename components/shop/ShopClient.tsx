@@ -23,7 +23,7 @@ export function ShopClient() {
   const [category, setCategory] = useState<ProductCategory | "All">("All");
   const [availability, setAvailability] = useState<"All" | "In stock" | "Out of stock">("All");
   const [maxPrice, setMaxPrice] = useState(10000);
-  const [sort, setSort] = useState<SortKey>("newest");
+  const [sort, setSort] = useState<SortKey>("manual");
 
   useEffect(() => {
     listProducts().then(setProducts).catch((error) => {
@@ -73,6 +73,7 @@ export function ShopClient() {
           <label className="grid gap-2 text-sm">
             Sort
             <select value={sort} onChange={(e) => setSort(e.target.value as SortKey)} className="rounded-full border border-forest/10 bg-pearl/92 px-4 py-3">
+              <option value="manual">Admin order</option>
               <option value="newest">Newest</option>
               <option value="price-asc">Price Low to High</option>
               <option value="price-desc">Price High to Low</option>
