@@ -64,6 +64,10 @@ export function CheckoutClient() {
   const [address, setAddress] = useState("");
   const [stateName, setStateName] = useState("");
   const [pincode, setPincode] = useState("");
+  const [pincodeStatus, setPincodeStatus] = useState<
+    "idle" | "checking" | "valid" | "invalid" | "error"
+  >("idle");
+  const [pincodeMessage, setPincodeMessage] = useState("");
 
   useEffect(() => {
     if (isBuyNowCheckout) {
@@ -77,7 +81,47 @@ export function CheckoutClient() {
     setStoredBuyNowItem(null);
   }, [buyNowItem, isBuyNowCheckout]);
 
-  
+  useEffect(() => {
+    if (!/^\d{6}$/.test(pincode)) {
+      setPincodeStatus("idle");
+      setPincodeMessage("");
+      return;
+    }
+
+    const controller = new AbortController();
+    setPincodeStatus("checking");
+    setPincodeMessage("Verifying PIN code…");
+    const timer = setTimeout(async () => {
+      try {
+        const response = await fetch(
+          `/api/pincode?pincode=${encodeURIComponent(pincode)}`,
+          { signal: controller.signal }
+        );
+        const result = await response.json();
+        if (controller.signal.aborted) return;
+        if (!response.ok) {
+          setPincodeStatus(response.status === 404 || response.status === 400 ? "invalid" : "error");
+          setPincodeMessage(result.error || "Could not verify this PIN code. Please try again.");
+          return;
+        }
+
+        setCity(result.city);
+        setStateName(result.state);
+        setPincodeStatus("valid");
+        setPincodeMessage("PIN code verified. City and state filled automatically.");
+      } catch (error) {
+        if (controller.signal.aborted) return;
+        console.error("PIN code verification request failed:", error);
+        setPincodeStatus("error");
+        setPincodeMessage("Could not verify this PIN code. Please try again.");
+      }
+    }, 350);
+
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [pincode]);
 
   const handlePayment = async () => {
     setPaymentError("");
@@ -92,6 +136,11 @@ export function CheckoutClient() {
   !pincode
 ) {
   setPaymentError("Please fill all shipping details.");
+  return;
+}
+
+if (pincodeStatus !== "valid") {
+  setPaymentError("Please enter and verify a valid Indian PIN code.");
   return;
 }
 
@@ -291,9 +340,10 @@ if (data.success) {
 
               <input
                 className={inputClass}
-                placeholder="City"
+                placeholder="City / District"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
+                autoComplete="address-level2"
               />
 
               <input
@@ -308,14 +358,44 @@ if (data.success) {
                 placeholder="State"
                 value={stateName}
                 onChange={(e) => setStateName(e.target.value)}
+                autoComplete="address-level1"
               />
 
-              <input
-                className={inputClass}
-                placeholder="Pincode"
-                value={pincode}
-                onChange={(e) => setPincode(e.target.value)}
-              />
+              <div className="grid gap-2">
+                <input
+                  className={inputClass}
+                  placeholder="PIN code"
+                  value={pincode}
+                  maxLength={6}
+                  inputMode="numeric"
+                  autoComplete="postal-code"
+                  aria-describedby="pincode-status"
+                  aria-invalid={pincodeStatus === "invalid"}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, "").slice(0, 6);
+                    setPincode(value);
+                    setCity("");
+                    setStateName("");
+                  }}
+                />
+                <p
+                  id="pincode-status"
+                  aria-live="polite"
+                  className={`min-h-5 px-2 text-xs ${
+                    pincodeStatus === "valid"
+                      ? "text-green-700"
+                      : pincodeStatus === "invalid" || pincodeStatus === "error"
+                        ? "text-red-700"
+                        : "text-moss"
+                  }`}
+                >
+                  {pincodeStatus === "checking"
+                    ? "Verifying PIN code…"
+                    : pincodeMessage || (pincode.length > 0 && pincode.length < 6
+                      ? "Enter a six-digit Indian PIN code."
+                      : "")}
+                </p>
+              </div>
             </div>
           </section>
 

@@ -264,8 +264,8 @@ export function Hero() {
               KOTA KARIGARI
             </h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-moss sm:text-base">
-              Contemporary ethnic and Indo-western styles, crafted for comfort with
-              breathable fabrics and traditional Indian detailing.
+              Discover contemporary ethnic and Indo-western styles in breathable cotton,
+              Kota Doria and Mal cotton, finished with traditional Indian detailing.
             </p>
           </motion.div>
 

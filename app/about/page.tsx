@@ -1,3 +1,12 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "About Kota Karigari",
+  description:
+    "Meet Kota Karigari, an Indian ethnic wear label inspired by graceful fabrics, Kota Doria craftsmanship and contemporary silhouettes.",
+  alternates: { canonical: "/about" },
+};
+
 export default function AboutPage() {
   return (
     <div className="luxury-container py-16">
