@@ -8,7 +8,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { createCartItem, saveBuyNowItem, useCartStore } from "@/store/cart-store";
 import type { Product, ProductSize } from "@/types/product";
-import { formatCurrency } from "@/utils/format";
+import { formatCurrency, getProductPrice } from "@/utils/format";
 import { ImageCarousel } from "./ImageCarousel";
 import { useWishlistStore } from "@/store/wishlist-store";
 
@@ -28,10 +28,7 @@ function ProductPreviewModal({ product, onClose }: { product: Product; onClose: 
   const [size, setSize] = useState<ProductSize>(product.sizes[0]);
   const [quantity, setQuantity] = useState(1);
 
-  const currentPrice = product.discountPrice ?? product.price;
-  const discount = product.discountPrice
-    ? Math.round(((product.price - product.discountPrice) / product.price) * 100)
-    : 0;
+  const currentPrice = getProductPrice(product);
   const sizeStock =
     product.sizeInventory.find((item) => item.size === size)?.stock ?? product.stock;
   const unavailable = product.stock <= 0 || sizeStock <= 0;
@@ -144,6 +141,7 @@ function ProductPreviewModal({ product, onClose }: { product: Product; onClose: 
               <h2 className="mt-2 font-serif text-3xl leading-tight text-forest">{product.name}</h2>
               <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
                 <span className="text-xl font-semibold text-forest">{formatCurrency(currentPrice)}</span>
+                {/* Discount display can be restored by re-enabling getProductPrice in utils/format.ts.
                 {product.discountPrice && (
                   <span className="text-moss/60 line-through">{formatCurrency(product.price)}</span>
                 )}
@@ -151,7 +149,7 @@ function ProductPreviewModal({ product, onClose }: { product: Product; onClose: 
                   <span className="rounded-full bg-gold/15 px-2 py-0.5 text-xs font-semibold text-gold">
                     {discount}% off
                   </span>
-                )}
+                )} */}
               </div>
               <p className="mt-3 text-sm leading-7 text-moss line-clamp-3">{product.description}</p>
 
@@ -234,15 +232,7 @@ export function ProductCard({ product, imageRotationDelay = 0 }: ProductCardProp
 
   const [showPreview, setShowPreview] = useState(false);
 
-  const currentPrice = product.discountPrice ?? product.price;
-
-  const discount = product.discountPrice
-    ? Math.round(
-        ((product.price - product.discountPrice) /
-          product.price) *
-          100
-      )
-    : 0;
+  const currentPrice = getProductPrice(product);
 
   const isOut = product.stock <= 0;
 
@@ -306,6 +296,7 @@ export function ProductCard({ product, imageRotationDelay = 0 }: ProductCardProp
           </div>
           <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
             <span className="font-semibold text-forest">{formatCurrency(currentPrice)}</span>
+            {/* Discount display can be restored by re-enabling getProductPrice in utils/format.ts.
             {product.discountPrice && (
               <span className="text-moss/60 line-through">{formatCurrency(product.price)}</span>
             )}
@@ -313,7 +304,7 @@ export function ProductCard({ product, imageRotationDelay = 0 }: ProductCardProp
               <span className="rounded-full bg-gold/15 px-2 py-0.5 text-xs font-semibold text-gold">
                 {discount}% off
               </span>
-            )}
+            )} */}
           </div>
           <div className="mt-3 flex flex-wrap gap-2 text-xs text-moss">
             {product.sizes.map((size) => (

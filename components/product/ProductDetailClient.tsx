@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { ProductCard } from "@/components/product/ProductCard";
 import { createCartItem, saveBuyNowItem, useCartStore } from "@/store/cart-store";
 import type { Product, ProductSize } from "@/types/product";
-import { formatCurrency } from "@/utils/format";
+import { formatCurrency, getProductPrice } from "@/utils/format";
 
 interface ProductDetailClientProps {
   product: Product;
@@ -24,7 +24,7 @@ export function ProductDetailClient({ product, related }: ProductDetailClientPro
   const [quantity, setQuantity] = useState(1);
   const addItem = useCartStore((state) => state.addItem);
   const setBuyNowItem = useCartStore((state) => state.setBuyNowItem);
-  const currentPrice = product.discountPrice ?? product.price;
+  const currentPrice = getProductPrice(product);
   const sizeStock =
     product.sizeInventory.find((item) => item.size === size)?.stock ?? product.stock;
   const unavailable = product.stock <= 0 || sizeStock <= 0;
@@ -149,13 +149,13 @@ export function ProductDetailClient({ product, related }: ProductDetailClientPro
           <h1 className="mt-4 font-serif text-5xl leading-tight text-forest">{product.name}</h1>
           <div className="mt-5 flex items-center gap-3">
             <span className="text-2xl font-semibold">{formatCurrency(currentPrice)}</span>
+            {/* Discount display can be restored by re-enabling getProductPrice in utils/format.ts.
             {product.discountPrice ? (
               <span className="text-moss/60 line-through">{formatCurrency(product.price)}</span>
-            ) : null}
+            ) : null} */}
           </div>
           <p className="mt-6 leading-8 text-moss">{product.description}</p>
           <div className="mt-6 rounded-2xl bg-mist/70 p-5 text-sm leading-7 text-moss">
-            <p><span className="font-semibold text-forest">Fabric:</span> {product.fabric}</p>
             <p><span className="font-semibold text-forest">Delivery:</span> Estimated shipping in 3-5 business days.</p>
             <p><span className="font-semibold text-forest">Stock:</span> {unavailable ? "Out of stock" : `${sizeStock} available in ${size}`}</p>
           </div>

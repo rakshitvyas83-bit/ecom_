@@ -1,4 +1,5 @@
 import type { Product, ProductCategory, ProductSize } from "@/types/product";
+import { getProductPrice } from "@/utils/format";
 
 export type SortKey = "newest" | "price-asc" | "price-desc" | "popular";
 
@@ -12,7 +13,7 @@ export interface ProductFilters {
 
 export function filterProducts(products: Product[], filters: ProductFilters): Product[] {
   const filtered = products.filter((product) => {
-    const currentPrice = product.discountPrice ?? product.price;
+    const currentPrice = getProductPrice(product);
     const sizeMatch =
       !filters.size || filters.size === "All" || product.sizes.includes(filters.size);
     const categoryMatch =
@@ -30,10 +31,10 @@ export function filterProducts(products: Product[], filters: ProductFilters): Pr
 
   return [...filtered].sort((a, b) => {
     if (filters.sort === "price-asc") {
-      return (a.discountPrice ?? a.price) - (b.discountPrice ?? b.price);
+      return getProductPrice(a) - getProductPrice(b);
     }
     if (filters.sort === "price-desc") {
-      return (b.discountPrice ?? b.price) - (a.discountPrice ?? a.price);
+      return getProductPrice(b) - getProductPrice(a);
     }
     if (filters.sort === "popular") {
       return Number(b.popular) - Number(a.popular);
