@@ -6,6 +6,7 @@ import { databases } from "@/lib/appwrite";
 import { DATABASE_ID, PRODUCTS_ID } from "@/lib/constants";
 import { listProducts } from "@/lib/products";
 import type { Product } from "@/types/product";
+import { getProductPrice } from "@/utils/format";
 
 export default function AdminProductList() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -43,7 +44,7 @@ export default function AdminProductList() {
         <div key={p.id} className="flex justify-between border p-3 rounded">
           <div>
             <p>{p.name}</p>
-            <p>Rs. {p.discountPrice ?? p.price}</p>
+            <p>Rs. {getProductPrice(p)}</p>
             <p className={p.isactive !== false ? "text-sm text-green-600" : "text-sm text-red-600"}>
               {p.isactive !== false ? "Active" : "Inactive"}
             </p>

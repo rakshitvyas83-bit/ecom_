@@ -3,6 +3,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Product, ProductSize } from "@/types/product";
+import { getProductPrice } from "@/utils/format";
 
 const BUY_NOW_STORAGE_KEY = "KOTA_KARIGARI_BUY_NOW_ITEM";
 const BUY_NOW_LOCAL_STORAGE_KEY = "KOTA_KARIGARI_BUY_NOW_ITEM_LOCAL";
@@ -69,7 +70,7 @@ export const createCartItem = (
     name: product.name,
     image: product.images[0],
     size,
-    price: product.discountPrice ?? product.price,
+    price: getProductPrice(product),
     quantity: Math.min(quantity, sizeStock),
     stock: sizeStock
   } satisfies CartItem;
@@ -150,7 +151,7 @@ export const useCartStore = create<CartState>()(
                 name: product.name,
                 image: product.images[0],
                 size,
-                price: product.discountPrice ?? product.price,
+                price: getProductPrice(product),
                 quantity: Math.min(quantity, sizeStock),
                 stock: sizeStock
               }
