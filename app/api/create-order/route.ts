@@ -3,7 +3,7 @@ import { getRazorpay } from "@/lib/razorpay";
 import { getAuthenticatedUserId } from "@/lib/appwrite-server";
 
 const checkoutEnvironmentVariables = [
-  "NEXT_PUBLIC_RAZORPAY_KEY_ID",
+  "RAZORPAY_KEY_ID",
   "RAZORPAY_KEY_SECRET",
   "NEXT_PUBLIC_APPWRITE_ENDPOINT",
   "NEXT_PUBLIC_APPWRITE_PROJECT_ID",
@@ -84,7 +84,10 @@ export async function POST(req: Request) {
       receipt: `receipt_${Date.now()}`,
     });
 
-    return NextResponse.json(order);
+    return NextResponse.json({
+      ...order,
+      keyId: process.env.RAZORPAY_KEY_ID,
+    });
   } catch (error) {
     const details = getRazorpayErrorDetails(error);
     console.error("Razorpay order creation failed:", details);

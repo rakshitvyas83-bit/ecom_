@@ -11,6 +11,14 @@ export interface ProductFilters {
   sort?: SortKey;
 }
 
+const productSizeOrder: ProductSize[] = ["XS", "S", "M", "L", "XL", "XXL"];
+
+export function sortProductSizes(sizes: ProductSize[]): ProductSize[] {
+  return [...sizes].sort(
+    (a, b) => productSizeOrder.indexOf(a) - productSizeOrder.indexOf(b)
+  );
+}
+
 export function compareProductsByDisplayOrder(a: Product, b: Product): number {
   if (typeof a.displayOrder === "number" && typeof b.displayOrder === "number") {
     return (

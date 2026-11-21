@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { sortProductSizes } from "@/lib/catalog";
 import { createCartItem, saveBuyNowItem, useCartStore } from "@/store/cart-store";
 import type { Product, ProductSize } from "@/types/product";
 import { formatCurrency, getProductPrice } from "@/utils/format";
@@ -25,7 +26,8 @@ function ProductPreviewModal({ product, onClose }: { product: Product; onClose: 
   const [prevIndex, setPrevIndex] = useState<number | null>(null);
   const [fading, setFading] = useState(false);
   const [touchStart, setTouchStart] = useState(0);
-  const [size, setSize] = useState<ProductSize>(product.sizes[0]);
+  const sortedSizes = sortProductSizes(product.sizes);
+  const [size, setSize] = useState<ProductSize>(sortedSizes[0]);
   const [quantity, setQuantity] = useState(1);
 
   const currentPrice = getProductPrice(product);
@@ -157,7 +159,7 @@ function ProductPreviewModal({ product, onClose }: { product: Product; onClose: 
               <div className="mt-5">
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-forest">Size</p>
                 <div className="flex flex-wrap gap-2">
-                  {product.sizes.map((item) => (
+                  {sortedSizes.map((item) => (
                     <button
                       key={item}
                       onClick={() => setSize(item)}
@@ -231,6 +233,7 @@ export function ProductCard({ product, imageRotationDelay = 0 }: ProductCardProp
   );
 
   const [showPreview, setShowPreview] = useState(false);
+  const sortedSizes = sortProductSizes(product.sizes);
 
   const currentPrice = getProductPrice(product);
 
@@ -307,7 +310,7 @@ export function ProductCard({ product, imageRotationDelay = 0 }: ProductCardProp
             )} */}
           </div>
           <div className="mt-3 flex flex-wrap gap-2 text-xs text-moss">
-            {product.sizes.map((size) => (
+            {sortedSizes.map((size) => (
               <span key={size} className="rounded-full border border-forest/10 px-2 py-1">
                 {size}
               </span>
