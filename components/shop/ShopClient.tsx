@@ -41,7 +41,6 @@ export function ShopClient() {
       <SectionHeader
         eyebrow="Shop"
         title="The KOTA KARIGARI Collection"
-        copy="Filter silk-like kurtis, festive edits, and refined daily wear by size, category, and availability."
       />
       <div className="mb-10 rounded-2xl border border-forest/10 bg-pearl/72 p-5 shadow-sm">
         <div className="mb-5 flex items-center gap-2 text-sm font-semibold">
