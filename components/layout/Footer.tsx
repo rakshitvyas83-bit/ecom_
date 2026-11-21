@@ -9,8 +9,7 @@ export function Footer() {
         <div>
           <p className="font-serif text-4xl tracking-[0.14em] text-[#fff3de]">KOTA KARIGARI</p>
           <p className="mt-3 max-w-md text-sm leading-7 text-[#f8e8c8]/85">
-            Sleek. Simple. KOTA KARIGARI. Premium ethnic wear for women who prefer quiet
-            luxury, graceful fabrics, and modern silhouettes.
+            Crafted by hands , Chosen by hearts
           </p>
         </div>
         <div className="grid gap-8 sm:grid-cols-2">

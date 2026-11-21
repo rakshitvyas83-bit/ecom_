@@ -257,15 +257,17 @@ export function Hero() {
             transition={{ duration: shouldReduceMotion ? 0 : 0.5 }}
             className="relative z-10"
           >
-            <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.28em] text-gold sm:text-xs">
-              Exquisite. Elegant. Enchanting.
-            </p>
-            <h1 className="font-serif text-3xl leading-tight text-forest sm:text-4xl md:text-5xl">
-              KOTA KARIGARI
+            <h1 className="font-serif text-2xl leading-tight text-forest sm:text-3xl md:text-4xl">
+              Kota Karigari – Heritage|Elegance|Artistry
             </h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-moss sm:text-base">
-              Discover contemporary ethnic and Indo-western styles in breathable cotton,
-              Kota Doria and Mal cotton, finished with traditional Indian detailing.
+              From the royal land of Rajasthan comes a textile that tells a beautiful story of craftmanship, elegance and timeless tradition – Kota Doria.
+              <br />
+              <br />
+              Kota Karigari is a celebration of India’s rich textile heritage, bringing the timeless elegance of Kota Doria to the modern world. Rooted in the traditional craftsmanship of Kota- Rajasthan , our brand is dedicated to preserving and promoting the beauty of this exquisite art.
+            </p>
+            <p className="mt-3 font-serif text-base font-semibold text-forest sm:text-lg">
+              Kota Karigari – Crafted by hands , Chosen by hearts.
             </p>
           </motion.div>
 
@@ -280,9 +282,6 @@ export function Hero() {
           >
             <Button href="/shop">
               Shop Collection <ArrowRight size={17} />
-            </Button>
-            <Button href="/shop?sort=newest" variant="secondary">
-              New Arrivals
             </Button>
           </motion.div>
         </div>
