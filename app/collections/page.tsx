@@ -1,5 +1,13 @@
+import type { Metadata } from "next";
 import { categories } from "@/data/products";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+
+export const metadata: Metadata = {
+  title: "Ethnic Wear Collections",
+  description:
+    "Explore Kota Karigari collections for elegant everyday wear, festive styles and contemporary Indian ethnic fashion.",
+  alternates: { canonical: "/collections" },
+};
 
 export default function CollectionsPage() {
   return (

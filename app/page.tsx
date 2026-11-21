@@ -1,14 +1,19 @@
-import { Gem, ShieldCheck, Sparkles, Truck } from "lucide-react";
+import type { Metadata } from "next";
 import { FeaturedProducts } from "@/components/home/FeaturedProducts";
 import { Hero } from "@/components/home/Hero";
-import { Button } from "@/components/ui/Button";
 
-const reasons = [
-  { icon: Gem, title: "Premium Fabric", copy: "Silk blends, modal cottons, and fluid finishes." },
-  { icon: Sparkles, title: "Elegant Designs", copy: "Modern cuts with subtle festive detailing." },
-  { icon: Truck, title: "Fast Delivery", copy: "Carefully packed pieces shipped with tracking." },
-  { icon: ShieldCheck, title: "Secure Payments", copy: "Checkout UI prepared for trusted gateways." }
-];
+export const metadata: Metadata = {
+  title: "Kota Doria Ethnic Wear | Kota Karigari Official",
+  description:
+    "Shop Kota Karigari Official for elegant Indian ethnic wear, Kota Doria and doria-inspired styles, contemporary kurtas and festive fashion.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "Kota Karigari Official | Kota Doria Ethnic Wear",
+    description:
+      "Explore contemporary ethnic wear, Kota Doria styles, kurtas and festive fashion from Kota Karigari.",
+    url: "/",
+  },
+};
 
 export default function HomePage() {
   return (
@@ -38,38 +43,6 @@ export default function HomePage() {
         </div>
       </section> */}
       <FeaturedProducts />
-      <section className="luxury-container py-20">
-        <div className="grid gap-5 md:grid-cols-4">
-          {reasons.map((reason) => (
-            <div key={reason.title} className="satin-panel rounded-2xl p-6">
-              <reason.icon className="text-gold" />
-              <h3 className="mt-5 font-serif text-2xl">{reason.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-moss">{reason.copy}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-      <section className="luxury-container pb-20">
-        <div className="satin-panel grid gap-6 rounded-[2rem] p-8 md:grid-cols-[1fr_auto] md:items-center md:p-12">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gold">
-              Private notes
-            </p>
-            <h2 className="mt-3 font-serif text-4xl md:text-5xl">Join the KOTA KARIGARI list</h2>
-            <p className="mt-3 max-w-xl text-moss">
-              Receive collection previews, styling edits, and first access to limited drops.
-            </p>
-          </div>
-          <form className="flex flex-col gap-3 sm:min-w-[380px] sm:flex-row">
-            <input
-              type="email"
-              placeholder="Email address"
-              className="min-h-12 flex-1 rounded-full border border-forest/10 bg-pearl/80 px-5 outline-none transition focus:border-gold"
-            />
-            <Button type="submit">Subscribe</Button>
-          </form>
-        </div>
-      </section>
     </>
   );
 }
