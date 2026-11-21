@@ -1,6 +1,12 @@
 import Link from "next/link";
 
-const links = ["About", "Shipping Policy", "Terms & Conditions"];
+const links = [
+  "About",
+  "Shipping Policy",
+  "Return Exchange Refund Policy",
+  "Privacy Policy",
+  "Terms & Conditions",
+];
 
 export function Footer() {
   return (
@@ -14,9 +20,12 @@ export function Footer() {
         </div>
         <div className="grid gap-8 sm:grid-cols-2">
           <div className="space-y-3">
-            <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-[#fff3de]">
-              Contact
-            </h2>
+            <Link
+              href="/contact"
+              className="block text-sm text-[#f8e8c8]/88 transition hover:text-white"
+            >
+              Contact Us
+            </Link>
             <a
               href="https://www.instagram.com/kotakarigari.official?dmpr=bXVlZGRhMHlrcjFj"
               target="_blank"
@@ -25,17 +34,13 @@ export function Footer() {
             >
               Instagram
             </a>
-            <a
-              href="mailto:care@kotakarigari.com"
-              className="block break-all text-sm text-[#f8e8c8]/88 transition hover:text-white"
-            >
-              care@kotakarigari.com
-            </a>
           </div>
           <div className="flex flex-col items-start gap-3">
             {links.map((link) => (
               <Link
-                href={`/${link.toLowerCase().replaceAll(" ", "-")}`}
+                href={link === "Return Exchange Refund Policy"
+                  ? "/return-exchange-refund-policy"
+                  : `/${link.toLowerCase().replaceAll(" ", "-")}`}
                 key={link}
                 className="text-sm text-[#f8e8c8]/88 transition hover:text-white"
               >

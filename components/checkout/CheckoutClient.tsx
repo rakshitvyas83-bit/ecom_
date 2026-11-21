@@ -187,7 +187,7 @@ setLoading(true);
 
         currency: order.currency,
 
-        name: "LushFields",
+        name: "Kota Karigari",
 
         description: "Order Payment",
 
