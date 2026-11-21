@@ -105,9 +105,6 @@ export default function ShippingPolicyPage() {
           <h1 className="mt-3 font-serif text-4xl text-forest sm:text-5xl">
             Shipping Policy
           </h1>
-          <h2 className="mt-3 text-sm font-semibold uppercase tracking-[0.16em] text-moss">
-            Shipping & Delivery Policy
-          </h2>
           <p className="mt-6 leading-7 text-moss">
             At Kota Karigari, we believe that every creation carries a story of heritage,
             craftsmanship and tradition. We take utmost care in packaging and delivering
