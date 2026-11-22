@@ -30,6 +30,7 @@ export function FeaturedProducts() {
               key={product.id}
               product={product}
               imageRotationDelay={(index % 4) * 1200}
+              showCardActions={false}
             />
           ))}
         </div>

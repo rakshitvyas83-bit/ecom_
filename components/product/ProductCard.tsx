@@ -16,6 +16,7 @@ import { useWishlistStore } from "@/store/wishlist-store";
 interface ProductCardProps {
   product: Product;
   imageRotationDelay?: number;
+  showCardActions?: boolean;
 }
 
 function ProductPreviewModal({ product, onClose }: { product: Product; onClose: () => void }) {
@@ -221,7 +222,11 @@ function ProductPreviewModal({ product, onClose }: { product: Product; onClose: 
   );
 }
 
-export function ProductCard({ product, imageRotationDelay = 0 }: ProductCardProps) {
+export function ProductCard({
+  product,
+  imageRotationDelay = 0,
+  showCardActions = true
+}: ProductCardProps) {
   const addItem = useCartStore((state) => state.addItem);
 
   const toggleItem = useWishlistStore(
@@ -255,30 +260,34 @@ export function ProductCard({ product, imageRotationDelay = 0 }: ProductCardProp
               alt={product.name}
               rotationDelay={imageRotationDelay}
             />
-            <button
-              aria-label="Quick preview"
-              onClick={(e) => { e.preventDefault(); setShowPreview(true); }}
-              className="absolute left-4 top-4 grid h-10 w-10 place-items-center rounded-full bg-pearl/88 shadow-sm transition hover:text-gold"
-            >
-              <Eye size={18} />
-            </button>
-            <button
-  aria-label="Add to wishlist"
-  onClick={(e) => {
-    e.preventDefault();
-    toggleItem(product);
-  }}
-  className={`absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full shadow-sm transition ${
-    isWishlisted
-      ? "bg-rose text-white"
-      : "bg-pearl/88 hover:text-rose"
-  }`}
->
-  <Heart
-    size={18}
-    fill={isWishlisted ? "currentColor" : "none"}
-  />
-</button>
+            {showCardActions && (
+              <>
+                <button
+                  aria-label="Quick preview"
+                  onClick={(e) => { e.preventDefault(); setShowPreview(true); }}
+                  className="absolute left-4 top-4 grid h-10 w-10 place-items-center rounded-full bg-pearl/88 shadow-sm transition hover:text-gold"
+                >
+                  <Eye size={18} />
+                </button>
+                <button
+                  aria-label="Add to wishlist"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toggleItem(product);
+                  }}
+                  className={`absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full shadow-sm transition ${
+                    isWishlisted
+                      ? "bg-rose text-white"
+                      : "bg-pearl/88 hover:text-rose"
+                  }`}
+                >
+                  <Heart
+                    size={18}
+                    fill={isWishlisted ? "currentColor" : "none"}
+                  />
+                </button>
+              </>
+            )}
           </div>
         </Link>
         <div className="flex flex-1 flex-col justify-between pt-4">
