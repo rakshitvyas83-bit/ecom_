@@ -77,7 +77,7 @@ export function ProductDetailClient({ product, related }: ProductDetailClientPro
                   i === index ? "border-gold scale-105" : "border-transparent opacity-70 hover:opacity-100"
                 }`}
               >
-                <img src={item} alt={product.name} className="h-full w-full object-cover" />
+                <img src={item} alt={product.name} className="h-full w-full object-contain" />
               </button>
             ))}
           </div>
@@ -101,14 +101,14 @@ export function ProductDetailClient({ product, related }: ProductDetailClientPro
                 key={`prev-${prevIndex}`}
                 src={product.images[prevIndex]}
                 alt={product.name}
-                className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500"
+                className="absolute inset-0 h-full w-full object-contain opacity-0 transition-opacity duration-500"
               />
             )}
             <img
               key={`curr-${index}`}
               src={product.images[index]}
               alt={product.name}
-              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 group-hover:scale-105 transition-transform duration-700 ${
+              className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-500 ${
                 fading ? "opacity-0" : "opacity-100"
               }`}
             />
