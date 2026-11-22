@@ -100,7 +100,7 @@ export function ImageCarousel({
           alt={alt}
           loading="lazy"
           decoding="async"
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-in-out ${
+          className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-700 ease-in-out ${
             transitioning ? "opacity-0" : "opacity-100"
           }`}
         />
@@ -116,7 +116,7 @@ export function ImageCarousel({
         onLoad={() => {
           if (prev !== null) setTransitioning(true);
         }}
-        className={`h-full w-full object-cover transition-opacity duration-700 ease-in-out group-hover:scale-105 ${
+        className={`h-full w-full object-contain transition-opacity duration-700 ease-in-out ${
           prev === null || transitioning ? "opacity-100" : "opacity-0"
         }`}
       />

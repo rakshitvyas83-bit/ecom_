@@ -101,14 +101,14 @@ function ProductPreviewModal({ product, onClose }: { product: Product; onClose: 
                 key={`prev-${prevIndex}`}
                 src={product.images[prevIndex]}
                 alt={product.name}
-                className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500"
+                className="absolute inset-0 h-full w-full object-contain opacity-0 transition-opacity duration-500"
               />
             )}
             <img
               key={`curr-${index}`}
               src={product.images[index]}
               alt={product.name}
-              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${fading ? "opacity-0" : "opacity-100"}`}
+              className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-500 ${fading ? "opacity-0" : "opacity-100"}`}
             />
             {product.images.length > 1 && (
               <>
