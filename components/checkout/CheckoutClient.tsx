@@ -49,7 +49,7 @@ export function CheckoutClient() {
 
   const subtotal = getCartSubtotal(checkoutItems);
 
-  const shipping = subtotal > 5000 || subtotal === 0 ? 0 : 180;
+  const shipping = 0;
 
   const totalPrice = subtotal + shipping;
 
@@ -494,12 +494,7 @@ if (data.success) {
 
             <div className="flex justify-between">
               <span>Shipping</span>
-
-              <span>
-                {shipping === 0
-                  ? "Complimentary"
-                  : formatCurrency(shipping)}
-              </span>
+              <span>{formatCurrency(shipping)}</span>
             </div>
 
             <div className="flex justify-between text-base font-semibold">

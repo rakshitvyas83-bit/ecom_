@@ -112,6 +112,7 @@ export function HeroScrollStrip() {
                 src={product.images[0]}
                 alt={product.name}
                 draggable={false}
+                loading="lazy"
                 className="h-full w-full object-cover transition duration-500 hover:scale-105"
               />
             ) : (

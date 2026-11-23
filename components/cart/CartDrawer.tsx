@@ -10,7 +10,7 @@ import { formatCurrency } from "@/utils/format";
 export function CartDrawer() {
   const { items, isOpen, closeCart, increase, decrease, removeItem, setCartCheckoutMode } = useCartStore();
   const subtotal = getCartSubtotal(items);
-  const shipping = subtotal > 5000 || subtotal === 0 ? 0 : 180;
+  const shipping = 0;
 
   return (
     <AnimatePresence>
@@ -109,7 +109,7 @@ export function CartDrawer() {
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping</span>
-                  <span>{shipping === 0 ? "Complimentary" : formatCurrency(shipping)}</span>
+                  <span>{formatCurrency(shipping)}</span>
                 </div>
                 <div className="flex justify-between font-semibold">
                   <span>Estimated total</span>
