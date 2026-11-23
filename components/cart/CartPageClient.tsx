@@ -8,7 +8,7 @@ import { formatCurrency } from "@/utils/format";
 export function CartPageClient() {
   const { items, increase, decrease, removeItem, setCartCheckoutMode } = useCartStore();
   const subtotal = getCartSubtotal(items);
-  const shipping = subtotal > 5000 || subtotal === 0 ? 0 : 180;
+  const shipping = 0;
 
   return (
     <div className="luxury-container py-14">
@@ -44,7 +44,7 @@ export function CartPageClient() {
             <h2 className="font-serif text-3xl">Order Summary</h2>
             <div className="mt-6 grid gap-3 text-sm">
               <div className="flex justify-between"><span>Subtotal</span><span>{formatCurrency(subtotal)}</span></div>
-              <div className="flex justify-between"><span>Shipping</span><span>{shipping === 0 ? "Complimentary" : formatCurrency(shipping)}</span></div>
+              <div className="flex justify-between"><span>Shipping</span><span>{formatCurrency(shipping)}</span></div>
               <div className="flex justify-between border-t border-pearl/15 pt-4 text-base font-semibold"><span>Total</span><span>{formatCurrency(subtotal + shipping)}</span></div>
             </div>
             <Button

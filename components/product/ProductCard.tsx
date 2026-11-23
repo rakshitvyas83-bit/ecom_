@@ -109,6 +109,7 @@ function ProductPreviewModal({ product, onClose }: { product: Product; onClose: 
               key={`curr-${index}`}
               src={product.images[index]}
               alt={product.name}
+              loading="lazy"
               className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-500 ${fading ? "opacity-0" : "opacity-100"}`}
             />
             {product.images.length > 1 && (
